@@ -11,8 +11,15 @@ isSet(n, bits):
 fitness(hardPenalty = -10, softPenalty=-1):
     return hardPenalty * (hc3 + hc4) + softPenalty * (sc1 + sc2);
 
-hc3(c):
+ifSimultaneous(c, slots, first):
+    for i in range(first, first+slots):
+        if isSet (i, c) and isSet(i, c+slots): return True;
+        c << 1;
+    return False;
+
+hc4(c, games, cats, priorityPerGame):
     totalSlots = bin(c).bit_Length();
-    if isSet(locateBit(
+    for i, g in enumerate(games):
+        if priorityPerGame[g] == 'Major': ifSimultaneous(c, totalSlots, i * totalSlots);
 
 
