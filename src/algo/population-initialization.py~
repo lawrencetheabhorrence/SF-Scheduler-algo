@@ -7,9 +7,10 @@ The initial population size is 50, but another value can be passed to the initia
 """
 import random
 
-generateChromosome(slots):
+def generateChromosome(slots):
     return random.getrandbits(slots);
 
-initPop(popSize, days, slotsPerDay, games, cats):
-    return [generateChromosome(days * slotsPerday * games * cats) for _ in range(popSize])
+def initPop(popSize, days, slotsPerDay, games, cats):
+    return [generateChromosome(days * slotsPerday * games * cats) for _ in range(popSize)];
+
 
