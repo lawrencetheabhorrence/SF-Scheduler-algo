@@ -1,6 +1,6 @@
-from . bit_helper import locateBit
-from . bit_helper import isSet
+from . bit_helper import locate_bit
+from . bit_helper import is_set
 
 
-def test_isSet():
-    assert isSet(3, 111001)
+def test_is_set():
+    assert is_set(3, 111001)
