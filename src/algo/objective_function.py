@@ -16,8 +16,9 @@ def if_simultaneous(c: int, slots: int, first: int, cats: int):
     to the same timeslot but in a different category
     """
     for i in range(first, first+slots):
-        if cats == 1: 
-            if is_set(i, c) and is_set(i + slots, c): return True
+        if cats == 1:
+            if is_set(i, c) and is_set(i + slots, c):
+                return True
         else:
             for cat in range(1, cats):
                 if is_set(i, c) and is_set(i+(slots*cat), c):
