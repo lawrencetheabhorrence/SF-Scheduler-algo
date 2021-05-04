@@ -10,10 +10,21 @@ def locate_bit(cats_per_game: Dict[str, int],
         if g == game:
             break
         partial += cats_per_game[g] * slots
-    return slot + (cat - 1) * slots + partial 
+    return slot + (cat - 1) * slots + partial
 
 
 def is_set(n: int, bits: int):
     """ is the byte at the nth position 1 ? """
     lone_bit = 0b1 << n
     return ((bits & lone_bit) >> n) % 2  # 1 if true, 0 otherwise
+
+
+def bit_slice(start: int, end: int, bits: int):
+    """ returns a bit string from start pos
+    to end pos (inclusive and 1-indexed) """
+    bits = bin(bits)
+    return int(bits[start+1:end+2], 2)
+
+
+def all_set(bits: int):
+    return (bits & (bits - 1)) == 0

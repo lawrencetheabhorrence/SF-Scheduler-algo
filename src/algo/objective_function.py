@@ -1,6 +1,8 @@
 from typing import Dict
 from . bit_helper import is_set
 from . bit_helper import locate_bit
+from . bit_helper import bit_slice
+from . bit_helper import all_set
 
 # def fitness(hardPenalty = -10, softPenalty=-1):
 # return hardPenalty * (hc3 + hc4) + softPenalty * (sc1 + sc2)
@@ -15,14 +17,15 @@ def if_simultaneous(c: int, slots: int, first: int, cats: int):
     Thus shifting by the total number of timeslots should move
     to the same timeslot but in a different category
     """
-    for i in range(first, first+slots):
-        if cats == 1:
-            if is_set(i, c) and is_set(i + slots, c):
+    if cats == 1:
+        return bit_slice(1, slots, c) \
+                & bit_slice(slots + 1, slots * 2, c) > 0
+    else:
+        for cat in range(1, cats):
+            first = bit_slice(1, cats, c)
+            comp = bit_slice(1 + (slots * cat), (slots * (cat + 1)), c)
+            if (first & comp) > 0:
                 return True
-        else:
-            for cat in range(1, cats):
-                if is_set(i, c) and is_set(i+(slots*cat), c):
-                    return True
     return False
 
 
