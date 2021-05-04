@@ -5,9 +5,12 @@ def locate_bit(cats_per_game: Dict[str, int],
                game: str, cat: int, slot: int, total_slots: int):
     # Note that cat is given as a number/index
     """ returns the index of the gene based on the game, cat, and slot """
-    return cat * slot \
-        + ([cats_per_game[g] * total_slots for g in len(cats_per_game)
-            if g != game])
+    partial = 0
+    for g in cats_per_game.keys():
+        if g == game:
+            break
+        partial += cats_per_game[g] * total_slots
+    return cat * slot + partial
 
 
 def is_set(n: int, bits: int):
