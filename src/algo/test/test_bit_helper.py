@@ -1,5 +1,5 @@
-from . bit_helper import locate_bit
-from . bit_helper import is_set
+from .. bit_helper import locate_bit
+from .. bit_helper import is_set
 
 
 def test_is_set():

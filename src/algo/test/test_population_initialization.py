@@ -1,6 +1,6 @@
-from . population_initialization import generate_chromosome
-from . population_initialization import init_pop
 import random
+from ..population_initialization import generate_chromosome
+from ..population_initialization import init_pop
 
 
 def test_generate_chromosome():
