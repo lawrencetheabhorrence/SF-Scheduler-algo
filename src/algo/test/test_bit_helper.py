@@ -19,5 +19,6 @@ def test_bit_slice():
     bits = 0b11101101
     assert bit_slice(3, 5, bits) == 0b101
 
+
 def all_set():
     assert all_set(0b1111)

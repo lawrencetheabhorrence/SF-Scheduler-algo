@@ -1,11 +1,20 @@
-from typing import Dict
-from . bit_helper import is_set
-from . bit_helper import locate_bit
-from . bit_helper import bit_slice
-from . bit_helper import all_set
+from itertools import chain
+from typing import Dict, List
+import re
+from . bit_helper import is_set, locate_bit, bit_slice
 
 # def fitness(hardPenalty = -10, softPenalty=-1):
 # return hardPenalty * (hc3 + hc4) + softPenalty * (sc1 + sc2)
+
+
+def enough_consec_slots(c: int, min_slots: int):
+    """for this game and category, are there enough
+    consecutive occupied slots?"""
+    # remove 0b prefix, split the string by the zero
+    # to get all sequences of occupied slots
+    # thus check if they are a nonzero multiple of the minimum timeslots
+    return all(x >= min_slots and x % min_slots == 0
+               for x in map(len, re.split(r'0+', bin(c)[2:])))
 
 
 def if_simultaneous(c: int, slots: int, first: int, cats: int):
@@ -27,6 +36,24 @@ def if_simultaneous(c: int, slots: int, first: int, cats: int):
             if (first & comp) > 0:
                 return True
     return False
+
+
+def split_chromosome(c: int, cats_per_game: Dict[str, int], slots):
+    c = bin(c)[3:]
+    return {g: [bit_slice(
+        pos := locate_bit(cats_per_game, g, 1 + slots*cat),
+        pos + slots*(cat+1) - 1,
+        slots) for cat in range(cats_per_game[g])]
+        for g in cats_per_game}
+
+
+def hc3(c: int, min_slots_per_game: Dict[str, int],
+        cats_per_game: Dict[str, int], slots):
+    splits = split_chromosome(c, cats_per_game, slots)
+    return all(chain(*[[enough_consec_slots(game_slice,
+                                            min_slots_per_game[g])
+                        for game_slice in splits[g]]
+                     for g in splits]))
 
 
 def hc4(c: int, cats_per_game: Dict[str, int],
