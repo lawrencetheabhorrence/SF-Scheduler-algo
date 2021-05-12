@@ -1,11 +1,12 @@
-from .. objective_function import if_simultaneous
-from .. objective_function import hc4
+from .. objective_function import hc4, hc3
 
 
-def test_if_simultaneous():
-    has_simultaneous = if_simultaneous(0b10011001, 4, 1, 1)
-    no_simultaneous = not if_simultaneous(0b11110000, 4, 1, 1)
-    assert has_simultaneous and no_simultaneous
+def test_hc3():
+    c = 0b1111000101111000101010111000
+    cats_per_game = {'A': 3, 'B': 2, 'C': 4}
+    slots = 3
+    min_slots_per_game = {'A': 3, 'B': 3, 'C': 3}
+    assert not hc3(c, min_slots_per_game, cats_per_game, slots)
 
 
 def test_hc4():
