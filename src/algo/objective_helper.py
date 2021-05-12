@@ -3,14 +3,15 @@ from typing import Dict
 from . bit_helper import bit_slice, locate_bit
 
 
-def enough_consec_slots(c: str, min_slots: int) -> bool:
+def enough_consec_slots(c: str, min_slots: str) -> bool:
     """for this game and category, are there enough
     consecutive occupied slots?"""
-    # remove 0b prefix, split the string by the zero
-    # to get all sequences of occupied slots
+    # get all sequences of occupied slots
     # thus check if they are a nonzero multiple of the minimum timeslots
+    occupied = filter(lambda x: len(x) > 0,
+                      re.split(r'0+', c))
     return all(x >= min_slots and x % min_slots == 0
-               for x in map(len, re.split(r'0+', bin(c)[2:])))
+               for x in map(len, occupied))
 
 
 def if_simultaneous(c: int, slots: int,
@@ -53,8 +54,7 @@ def split_chromosome(c: int,
     end = 0
     game_slices = {}
     for g in cats_per_game:
-        game_slices[g] = list(map(lambda x: int(x, 2), \
-                                  sections[end:end+cats_per_game[g]]))
+        game_slices[g] = sections[end:end+cats_per_game[g]]
         end += cats_per_game[g]
 
     return game_slices

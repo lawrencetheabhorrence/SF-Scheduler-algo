@@ -15,6 +15,7 @@ def hc3(c: int, min_slots_per_game: Dict[str, int],
     """ Events of games must have consecutive n timeslots,
     where n is given by the user for a particular game"""
     slices_per_game = split_chromosome(c, cats_per_game, slots)
+    print(slices_per_game)
     # okay... so unpacking all of this
     # we are basically running the constraint on each slice
     # since we are processing it on a dictionary, the bools
@@ -23,11 +24,11 @@ def hc3(c: int, min_slots_per_game: Dict[str, int],
     # (mapping over each value in the dict .. basically)
     # we then flatten that list and check if it is true for
     # all slices
-    fulfilled = all(chain(*[[enough_consec_slots(game_slice,
-                                                 min_slots_per_game[g])
-                            for game_slice in slices_per_game[g]]
-                            for g in slices_per_game]))
-    return 1 if fulfilled else 0
+    fulfilled = list(chain(*[[enough_consec_slots(game_slice,
+                                             min_slots_per_game[g])
+                         for game_slice in slices_per_game[g]]
+                        for g in slices_per_game]))
+    return 1 if all(fulfilled) else 0
 
 
 def hc4(c: int, cats_per_game: Dict[str, int],
