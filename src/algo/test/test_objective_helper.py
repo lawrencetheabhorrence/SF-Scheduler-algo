@@ -12,13 +12,13 @@ def test_split_chromosome():
     cats_per_game = {'A': 3, 'B': 2, 'C': 4}
     slots = 3
     result = {
-        'A': ['111', '000', '101'],
-        'B': ['111', '000'],
-        'C': ['101', '010', '111', '000']
+        'A': [0b111, 0b000, 0b101],
+        'B': [0b111, 0b000],
+        'C': [0b101, 0b010, 0b111, 0b000]
     }
     assert split_chromosome(c, cats_per_game, slots) == result
 
 def test_enough_consec_slots():
-    c = '111011100111111'
+    c = 0b111011100111111
     assert enough_consec_slots(c, 3) and not \
         enough_consec_slots(c, 2)

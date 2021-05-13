@@ -25,9 +25,9 @@ def hc3(c: int, min_slots_per_game: Dict[str, int],
     # we then flatten that list and check if it is true for
     # all slices
     fulfilled = list(chain(*[[enough_consec_slots(game_slice,
-                                             min_slots_per_game[g])
-                         for game_slice in slices_per_game[g]]
-                        for g in slices_per_game]))
+                                                  min_slots_per_game[g])
+                              for game_slice in slices_per_game[g]]
+                             for g in slices_per_game]))
     return 1 if all(fulfilled) else 0
 
 
