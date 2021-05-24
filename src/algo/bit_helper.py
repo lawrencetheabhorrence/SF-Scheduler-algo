@@ -14,7 +14,7 @@ def locate_bit(cats_per_game: Dict[str, int],
     return slot + (cat - 1) * slots + partial
 
 
-def is_set(n: int, bits: int) -> bool:
+def is_set(n: int, bits: int) -> int:
     """ is the byte at the nth position 1 ?
     (1-indexed)
     """

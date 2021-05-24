@@ -7,8 +7,9 @@ from .objective_helper import \
         enough_rounds
 
 
-# def fitness(hardPenalty = -10, softPenalty=-1):
-# return hardPenalty * (hc3 + hc4) + softPenalty * (sc1 + sc2)
+def fitness(hardReward = 10, softPenalty=-5):
+    """ fitness value """
+    return hardReward * (hc3 + hc4) + softPenalty * (sc1 + sc2)
 
 
 def hc3(c: int, min_slots_per_game: Dict[str, int],
