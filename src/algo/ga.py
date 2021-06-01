@@ -1,7 +1,9 @@
 import random as r
+import numpy as np
 from typing import List
 from .bit_helper import is_set
 from .objective_function import fitness
+from .population_initialization import init_pop
 
 
 def crossover(c1: int, c2: int, k: int):
@@ -36,4 +38,10 @@ def rank_selection(pop: List[int], proportion: float):
         raise ValueError("Please give a number between \
                          0 and 1")
     breeding_pop_size = int(len(pop) * proportion)
-    return r.choices(pop, weights=range(50, 1, -1), k=breeding_pop_size)
+    return np.random.choice(pop, p=range(50, 1, -1), size=(breeding_pop_size),
+                            replace=False)
+
+
+def genetic_algo_cycle(pop_size:int, proportion:int):
+    pop = population_initialization(pop_size)
+    breeding_pop = rank_selection(pop, proportion)

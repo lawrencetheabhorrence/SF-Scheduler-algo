@@ -58,11 +58,11 @@ def split_chromosome(c: int, slots: int) -> List[str]:
     return [c[s: s + slots] for s in range(0, len(c), slots)]
 
 
-def aggregate_occupied(c: int, slots: int):
-    """ returns a bitstring where all the set bits
-    are those that have a game occupying the timeslot """
-    sections = map(lambda x: int(x, 2), split_chromosome(c, slots))
-    return bin(reduce(lambda accum, x: accum | x, sections))
+def has_even_share(c: int, section_len: int):
+    optimal_slots = len(bin(c)[3:]) / section_len
+    occupieds_per_day = map(lambda x: x.count('1'),
+                            split_chromosome(c, section_len))
+    return sum(map(lambda x: abs(x-optimal_slots), occupieds_per_day))
 
 
 def split_chromosome_per_game(c: int,

@@ -2,23 +2,33 @@ from typing import Dict
 from . bit_helper import locate_bit
 from .objective_helper import \
         enough_consec_slots, if_simultaneous, \
-        split_chromosome_per_game, aggregate_occupied, \
+        split_chromosome_per_game, has_even_share, \
         split_chromosome, check_cond_for_each_game, \
         enough_rounds
 
 
-def fitness(hardReward = 10, softPenalty=-5):
+def fitness(c, game_data, sf_data, hardReward=10, softPenalty=-5):
     """ fitness value """
-    return hardReward * (hc3 + hc4) + softPenalty * (sc1 + sc2)
+    cats, priority, rounds, slots_per_round = game_data.values()
+    slots, days = sf_data
+    sc_hc3 = hc3(c, slots_per_round, cats, slots)
+    sc_hc4 = hc4(c, cats, priority, slots)
+    sc_hc5 = hc5(c, cats, rounds, slots)
+    sc_sc1 = sc1(c, slots, days)
+    sc_sc2 = sc2(c, slots, days)
+    print(sc_hc3, sc_hc4, sc_hc5, sc_sc1, sc_sc2)
+    return hardReward * (sc_hc3 + sc_hc4 + sc_hc5) + softPenalty * (sc_sc1 +
+                                                                    sc_sc2)
 
 
-def hc3(c: int, min_slots_per_game: Dict[str, int],
+def hc3(c: int, slots_per_round: Dict[str, int],
         cats_per_game: Dict[str, int], slots):
     """ Events of games must have consecutive n timeslots,
     where n is given by the user for a particular game"""
     return check_cond_for_each_game(c, cats_per_game, slots,
-                                    min_slots_per_game,
+                                    slots_per_round,
                                     enough_consec_slots)
+
 
 def hc4(c: int, cats_per_game: Dict[str, int],
         priority_per_game: Dict[str, int], slots):
@@ -28,14 +38,15 @@ def hc4(c: int, cats_per_game: Dict[str, int],
                          list(priority_per_game))
 
     for g in major_games:
-        pos = locate_bit(cats_per_game, g, 1, 2, slots)
+        pos = locate_bit(cats_per_game, g, 1, 1, slots)
         if if_simultaneous(c, slots, pos, cats_per_game[g]):
-            return 1
-    return 0
+            return 0
+    return 1
 
 
 def hc5(c: int, cats_per_game: Dict[str, int],
         rounds_per_game: Dict[str, int], slots: int):
+    """ Games must have exactly the given number of rounds """
     return check_cond_for_each_game(c, cats_per_game, slots,
                                     rounds_per_game,
                                     enough_rounds)
@@ -43,12 +54,7 @@ def hc5(c: int, cats_per_game: Dict[str, int],
 def sc1(c: int, slots: int, days: int):
     """The total number of events per day
     must be evenly distributed over the week."""
-    occupieds = aggregate_occupied(c, slots).count('1')
-    slots_per_day = slots // days
-    occupieds_per_day = map(lambda x: x.count('1'),
-                            split_chromosome(c, slots_per_day))
-    optimal_slots = occupieds // days
-    return sum(map(lambda x: abs(x - optimal_slots), occupieds_per_day))/days
+    return has_even_share(c, slots // days)/(slots // days)
 
 
 def centering_score(c: str):
@@ -61,8 +67,8 @@ def centering_score(c: str):
 
 
 def sc2(c: int, slots: int, days: int):
-    """ Minimize games nearer to the starting and
-    ending time per day. """
+    """ Minimize games farther to the starting and
+    ending time per day.  (or games closer to the "middle") """
     slots_per_day = slots // days
     sections = split_chromosome(c, slots_per_day)
     return sum((centering_score(x) for x in sections))/slots_per_day

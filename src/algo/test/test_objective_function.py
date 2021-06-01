@@ -1,5 +1,6 @@
 from .. objective_function import hc4, hc3, \
-        sc1, hc5, centering_score, sc2
+        sc1, hc5, centering_score, sc2, fitness
+from .. data import read_game_data, read_sf_data
 
 
 def test_hc3():
@@ -13,11 +14,11 @@ def test_hc3():
 
 
 def test_hc4():
-    priority_per_game = {'A': 'Major', 'B': 'Junior', 'C': 'Minor'}
+    priority_per_game = {'A': 'Major', 'B': 'Major', 'C': 'Major'}
     cats_per_game = {'A': 3, 'B': 2, 'C': 3}
     slots = 3
     c = 0b1111010001001001110001010
-    assert hc4(c, cats_per_game, priority_per_game, slots) == 1
+    assert hc4(c, cats_per_game, priority_per_game, slots) == 0
 
 
 def test_hc5():
@@ -50,3 +51,11 @@ def test_sc2():
     c_skewed = 0b1001110011
     assert sc2(c, slots, days) == 0
     assert sc2(c_skewed, slots, days) > 0
+
+
+def test_fitness():
+    c = 0b1101111110110100
+    c2 = 0b1010010010010010
+    game_data = read_game_data("test/data/test_game_data.csv")
+    sf_data = read_sf_data("test/data/test_sf_data.csv")
+    assert fitness(c2, game_data, sf_data) > fitness(c, game_data, sf_data)
