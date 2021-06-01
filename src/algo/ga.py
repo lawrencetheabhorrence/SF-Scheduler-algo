@@ -42,6 +42,20 @@ def rank_selection(pop: List[int], proportion: float):
                             replace=False)
 
 
-def genetic_algo_cycle(pop_size:int, proportion:int):
-    pop = population_initialization(pop_size)
-    breeding_pop = rank_selection(pop, proportion)
+def genetic_algo_cycle(proportion: int, pop: List[int], mutation_prop: int):
+    breeding_pop = rank_selection(pop, proportion).shuffle()
+    children = [breeding_pop[i:i+2] for i in range(0, len(breeding_pop), 2)]
+    final_pop = breeding_pop.append(children).shuffle()
+    m_size = int(mutation_prop*len(final_pop))
+    return list(map(mutation_rand,
+                    final_pop[0:m_size])).append(final_pop[m_size:])
+
+
+def genetic_algo(pop_size: int, threshold: int, proportion: int):
+    population = population_initialization(pop_size)
+    past_fit = sum(map(fitness, population))/len(population)
+    while True:
+        population = genetic_algo_cycle(proportion, population_initialization)
+        fit = sum(map(fitness, population))/len(population))
+        if (abs(fit - past_fit) < threshold):
+            return max(population, key=fitness)
