@@ -46,6 +46,7 @@ def rank_selection(pop: List[int],
 def genetic_algo_cycle(mutation_prop: float, pop: List[int],
                        game_src="data/game_data.csv",
                        sf_src="data/sf_data.csv"):
+    """ generates a generation of individuals """
     breeding_pop = rank_selection(pop, game_src, sf_src)
     parents = (breeding_pop[i:i+2] for i in range(0, len(breeding_pop), 2))
     children = [crossover_rand(p[0], p[1]) for p in parents]
@@ -58,6 +59,12 @@ def genetic_algo(pop_size: int, threshold: int,
                  mutation_prop: float,
                  game_src="data/game_data.csv",
                  sf_src="data/sf_data.csv"):
+    """ The genetic algorithm first generates
+    an initial population and generates new solutions
+    through the genetic_algo_cycle function.
+    The algo eventually stops when the generations converge,
+    (fitness doesnt change much) then returns the fittest
+    individual from the latest generation """
 
     def avg_fitness(population):
         return sum(map(lambda x: fitness(x, game_src, sf_src),
