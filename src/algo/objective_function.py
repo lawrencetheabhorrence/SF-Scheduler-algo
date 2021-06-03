@@ -1,4 +1,5 @@
 from typing import Dict
+from . data import read_sf_data, read_game_data
 from . bit_helper import locate_bit
 from .objective_helper import \
         enough_consec_slots, if_simultaneous, \
@@ -7,8 +8,13 @@ from .objective_helper import \
         enough_rounds
 
 
-def fitness(c, game_data, sf_data, hardReward=10, softPenalty=-5):
+def fitness(c,
+            game_src="data/game_data.csv",
+            sf_src="data/sf_data.csv",
+            hardReward=10, softPenalty=-5):
     """ fitness value """
+    game_data = read_game_data(game_src)
+    sf_data = read_sf_data(sf_src)
     cats, priority, rounds, slots_per_round = game_data.values()
     slots, days = sf_data
     sc_hc3 = hc3(c, slots_per_round, cats, slots)
@@ -16,7 +22,6 @@ def fitness(c, game_data, sf_data, hardReward=10, softPenalty=-5):
     sc_hc5 = hc5(c, cats, rounds, slots)
     sc_sc1 = sc1(c, slots, days)
     sc_sc2 = sc2(c, slots, days)
-    print(sc_hc3, sc_hc4, sc_hc5, sc_sc1, sc_sc2)
     return hardReward * (sc_hc3 + sc_hc4 + sc_hc5) + softPenalty * (sc_sc1 +
                                                                     sc_sc2)
 

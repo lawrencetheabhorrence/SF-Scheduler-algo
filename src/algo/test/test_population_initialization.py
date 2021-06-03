@@ -16,5 +16,6 @@ def test_random_chromosome_lengths():
 
 
 def test_init_pop():
-    p = init_pop(50, 7, 5, 2, 3)
-    assert len(p) == 50 and p[0].bit_length() == (7 * 5 * 2 * 3) + 1
+    p = init_pop(50, "test/data/test_game_data.csv",
+                 "test/data/test_sf_data.csv")
+    assert len(p) == 50 and int(p[0]).bit_length() == (3 * 2 * 5) + 1

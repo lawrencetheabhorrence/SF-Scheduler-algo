@@ -56,6 +56,6 @@ def test_sc2():
 def test_fitness():
     c = 0b1101111110110100
     c2 = 0b1010010010010010
-    game_data = read_game_data("test/data/test_game_data.csv")
-    sf_data = read_sf_data("test/data/test_sf_data.csv")
-    assert fitness(c2, game_data, sf_data) > fitness(c, game_data, sf_data)
+    game_src = "test/data/test_game_data.csv"
+    sf_src = "test/data/test_sf_data.csv"
+    assert fitness(c2, game_src, sf_src) > fitness(c, game_src, sf_src)
