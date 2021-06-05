@@ -11,7 +11,7 @@ from .objective_helper import \
 def fitness(c,
             game_src="data/game_data.csv",
             sf_src="data/sf_data.csv",
-            hardReward=10, softPenalty=-5):
+            hardReward=100, softPenalty=-5):
     """ fitness value """
     game_data = read_game_data(game_src)
     sf_data = read_sf_data(sf_src)

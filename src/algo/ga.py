@@ -1,5 +1,6 @@
 import random as r
 import numpy as np
+import pandas as pd
 import math
 from typing import List
 from .bit_helper import is_set
@@ -58,7 +59,8 @@ def genetic_algo_cycle(mutation_prop: float, pop: List[int],
 def genetic_algo(pop_size: int, threshold: int,
                  mutation_prop: float,
                  game_src="data/game_data.csv",
-                 sf_src="data/sf_data.csv"):
+                 sf_src="data/sf_data.csv",
+                 fitness_src="data/fitness.csv"):
     """ The genetic algorithm first generates
     an initial population and generates new solutions
     through the genetic_algo_cycle function.
@@ -71,12 +73,13 @@ def genetic_algo(pop_size: int, threshold: int,
                        population)) / len(population)
 
     population = init_pop(pop_size, game_src, sf_src)
-    past_fit = avg_fitness(population)
+    avg_fs=[avg_fitness(population)]
     while True:
         population = genetic_algo_cycle(mutation_prop, population,
                                         game_src, sf_src)
-        fit = avg_fitness(population)
-        if abs(fit - past_fit) < threshold:
+        avg_fs.append(avg_fitness(population))
+        if abs(avg_fs[-1] - avg_fs[-2]) < threshold:
+            pd.Series(data=avg_fs, dtype=float, name="Average\
+                      Fitness").to_csv(fitness_src, index=False)
             return max(population, key=(lambda x: fitness(x, game_src,
                                                           sf_src)))
-        past_fit = fit

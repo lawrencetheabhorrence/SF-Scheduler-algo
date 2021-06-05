@@ -29,4 +29,5 @@ def test_ga_cycle():
 def test_ga():
     assert isinstance(genetic_algo(5, 5, 0.1,
                                    "test/data/test_game_data.csv",
-                                   "test/data/test_sf_data.csv"), int)
+                                   "test/data/test_sf_data.csv",
+                                   "test/data/test_fitness.csv"), int)
