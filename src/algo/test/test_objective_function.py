@@ -35,7 +35,7 @@ def test_sc1():
     c = 0b1011100111001110
     days = 1
     slots = 5
-    assert sc1(c, slots, days) == 0
+    assert sc1(c, slots, days) - 0.66 < 0.01
 
 
 def test_centering_score():

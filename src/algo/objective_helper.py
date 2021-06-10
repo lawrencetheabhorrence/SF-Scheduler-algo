@@ -1,8 +1,9 @@
 import re
+from math import ceil, log2
 from itertools import chain
 from functools import reduce
 from typing import Dict, List, Callable
-from . bit_helper import bit_slice
+from .bit_helper import bit_slice
 
 
 def occupieds(c: int) -> List[str]:
@@ -57,12 +58,24 @@ def split_chromosome(c: int, slots: int) -> List[str]:
     c = bin(c)[3:]
     return [c[s: s + slots] for s in range(0, len(c), slots)]
 
+def aggregate_occupied(c: int, slots: int):
+    """ returns a bitstring as long as the total number
+    of slots for the SF. A bit should only have 0 if 
+    there are absolutely no games in that slot """
+    sections = map(int, split_chromosome(c, slots))
+    return reduce(lambda x, y: x | y, sections) | 1 << (ceil(log2(c))-1)
+
 
 def has_even_share(c: int, section_len: int):
-    optimal_slots = len(bin(c)[3:]) / section_len
-    occupieds_per_day = map(lambda x: x.count('1'),
-                            split_chromosome(c, section_len))
-    return sum(map(lambda x: abs(x-optimal_slots), occupieds_per_day))
+    """ when splitting a bitstring into groups of
+    fixed width, there should be an equal number
+    of 1's in each group (or as equal as possible)"""
+    occupieds = bin(c)[3:].count('1')
+    optimal_occupieds_per_section = occupieds / section_len
+    occupieds_per_section = list(map(lambda x: x.count('1'),
+                                 split_chromosome(c, section_len)))
+    return sum(map(lambda x: abs(x - optimal_occupieds_per_section),
+                   occupieds_per_section))/len(occupieds_per_section)
 
 
 def split_chromosome_per_game(c: int,
@@ -85,6 +98,17 @@ def split_chromosome_per_game(c: int,
 
         game_slices[g] = list(map(lambda x: int(x, 2),
                                   sections[end:end+cats_per_game[g]]))
+        end += cats_per_game[g]
+    return game_slices
+
+def split_chromosome_per_game_str(c: int,
+                                  cats_per_game: Dict[str, int],
+                                  slots: int) -> Dict[str, str]:
+    sections = split_chromosome(c, slots)
+    end = 0
+    game_slices = {}
+    for g in cats_per_game:
+        game_slices[g] = list(sections[end:end+cats_per_game[g]])
         end += cats_per_game[g]
 
     return game_slices

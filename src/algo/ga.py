@@ -13,7 +13,7 @@ def crossover(c1: int, c2: int, k: int):
     n = math.ceil(math.log2(c1))
     c1 = bin(c1)[2:]
     c2 = bin(c2)[2:]
-    return int(c1[0:k+1] + c2[k+1:n], 2)
+    return (int(c1[0:k+1] + c2[k+1:n], 2), int(c2[0:k+1] + c1[k+1:n], 2))
 
 
 def crossover_rand(c1: int, c2: int):
@@ -37,24 +37,32 @@ def rank_selection(pop: List[int],
                    game_src="data/game_data.csv",
                    sf_src="data/sf_data.csv"):
     """ choose breeding population by ranking fitness """
-    pop.sort(key=(lambda x: fitness(x, game_src, sf_src)))
+    pop.sort(key=(lambda x: fitness(x, game_src, sf_src)), reverse=True)
     return r.choices(pop,
                      weights=[i/sum(range(1, len(pop)+1))
                               for i in range(len(pop), 0, -1)],
-                     k=len(pop)*2)
+                     k=1)[0]
 
 
 def genetic_algo_cycle(mutation_prop: float, pop: List[int],
                        game_src="data/game_data.csv",
                        sf_src="data/sf_data.csv"):
     """ generates a generation of individuals """
-    breeding_pop = rank_selection(pop, game_src, sf_src)
-    parents = (breeding_pop[i:i+2] for i in range(0, len(breeding_pop), 2))
-    children = [crossover_rand(p[0], p[1]) for p in parents]
+    children = []
+    while len(children) < len(pop):
+        parent1 = rank_selection(pop, game_src, sf_src)
+        parent2 = rank_selection(pop, game_src, sf_src)
+        children.extend(crossover_rand(parent1, parent2))
     r.shuffle(children)
     m_size = int(mutation_prop*len(children))
     return list(map(mutation_rand, children[0:m_size])) + \
         children[m_size:]
+
+
+def avg_fitness(population, game_src, sf_src):
+        return sum(map(lambda x: fitness(x, game_src, sf_src),
+                       population)) / len(population)
+
 
 def genetic_algo(pop_size: int, threshold: int,
                  mutation_prop: float,
@@ -68,18 +76,33 @@ def genetic_algo(pop_size: int, threshold: int,
     (fitness doesnt change much) then returns the fittest
     individual from the latest generation """
 
-    def avg_fitness(population):
-        return sum(map(lambda x: fitness(x, game_src, sf_src),
-                       population)) / len(population)
-
     population = init_pop(pop_size, game_src, sf_src)
-    avg_fs=[avg_fitness(population)]
+    avg_fs = [avg_fitness(population, game_src, sf_src)]
     while True:
         population = genetic_algo_cycle(mutation_prop, population,
                                         game_src, sf_src)
-        avg_fs.append(avg_fitness(population))
+        avg_fs.append(avg_fitness(population, game_src, sf_src))
         if abs(avg_fs[-1] - avg_fs[-2]) < threshold:
-            pd.Series(data=avg_fs, dtype=float, name="Average\
-                      Fitness").to_csv(fitness_src, index=False)
+            pd.Series(data=avg_fs, dtype=float,
+                      name="Average Fitness").to_csv(fitness_src, index=True)
             return max(population, key=(lambda x: fitness(x, game_src,
                                                           sf_src)))
+
+
+def genetic_algo_fixed_gen(pop_size: int,
+                           mutation_prop: int,
+                           generations: int,
+                           game_src="data/game_data.csv",
+                           sf_src="data/sf_data.csv",
+                           fitness_src="data/fitness.csv"):
+    population = init_pop(pop_size, game_src, sf_src)
+    avg_fs = [avg_fitness(population, game_src, sf_src)]
+    for _ in range(generations):
+        population = genetic_algo_cycle(mutation_prop, population,
+                                        game_src, sf_src)
+        avg_fs.append(avg_fitness(population, game_src, sf_src))
+    pd.Series(data=avg_fs, dtype=float,
+              name="Average Fitness").to_csv(fitness_src, index=True)
+    return max(population, key=(lambda x: fitness(x, game_src,
+                                                  sf_src)))
+

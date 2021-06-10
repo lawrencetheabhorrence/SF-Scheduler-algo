@@ -1,17 +1,18 @@
+from math import ceil, log2
 from typing import Dict
-from . data import read_sf_data, read_game_data
-from . bit_helper import locate_bit
+from .data import read_sf_data, read_game_data
+from .bit_helper import locate_bit
 from .objective_helper import \
         enough_consec_slots, if_simultaneous, \
         split_chromosome_per_game, has_even_share, \
         split_chromosome, check_cond_for_each_game, \
-        enough_rounds
+        enough_rounds, aggregate_occupied
 
 
 def fitness(c,
             game_src="data/game_data.csv",
             sf_src="data/sf_data.csv",
-            hardReward=100, softPenalty=-5):
+            hardReward=100, softPenalty=-20):
     """ fitness value """
     game_data = read_game_data(game_src)
     sf_data = read_sf_data(sf_src)
@@ -22,8 +23,9 @@ def fitness(c,
     sc_hc5 = hc5(c, cats, rounds, slots)
     sc_sc1 = sc1(c, slots, days)
     sc_sc2 = sc2(c, slots, days)
-    return hardReward * (sc_hc3 + sc_hc4 + sc_hc5) + softPenalty * (sc_sc1 +
-                                                                    sc_sc2)
+    print(sc_hc3, sc_hc4, sc_hc5, sc_sc1, sc_sc2)
+    return hardReward * (sc_hc3 + sc_hc4 + sc_hc5) \
+        + softPenalty * (sc_sc2 + sc_sc1)
 
 
 def hc3(c: int, slots_per_round: Dict[str, int],
@@ -59,7 +61,8 @@ def hc5(c: int, cats_per_game: Dict[str, int],
 def sc1(c: int, slots: int, days: int):
     """The total number of events per day
     must be evenly distributed over the week."""
-    return has_even_share(c, slots // days)/(slots // days)
+    return has_even_share(aggregate_occupied(c, slots),
+                          slots // days)
 
 
 def centering_score(c: str):
@@ -68,7 +71,7 @@ def centering_score(c: str):
         return 0
 
     ideal_zeroes_len = (len(c) - (last_one - first_one + 1))/2
-    return abs(first_one - ideal_zeroes_len)
+    return abs(first_one - ideal_zeroes_len)/len(c)
 
 
 def sc2(c: int, slots: int, days: int):
@@ -76,4 +79,4 @@ def sc2(c: int, slots: int, days: int):
     ending time per day.  (or games closer to the "middle") """
     slots_per_day = slots // days
     sections = split_chromosome(c, slots_per_day)
-    return sum((centering_score(x) for x in sections))/slots_per_day
+    return sum((centering_score(x) for x in sections))/len(sections)
