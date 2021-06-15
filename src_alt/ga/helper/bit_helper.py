@@ -1,4 +1,5 @@
 from typing import Dict
+from math
 
 
 def locate_bit(cats_per_game: Dict[str, int],
@@ -27,3 +28,8 @@ def bit_slice(start: int, end: int, bits: int) -> int:
     to end pos (inclusive and 1-indexed) """
     bits = bin(bits)
     return int(bits[start+1:end+2], 2)
+
+
+def bitlength(n: int):
+    """ bitlength for numpy ints """
+    return math.ceil(math.log2(n))

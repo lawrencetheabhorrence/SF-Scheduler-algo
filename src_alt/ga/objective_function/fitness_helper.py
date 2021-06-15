@@ -3,8 +3,11 @@ from math import ceil, log2
 from itertools import chain
 from functools import reduce
 from typing import Dict, List, Callable
-from ..helper.bit_helper import bit_slice
-
+from ga.helper.bit_helper import bit_slice
+__all__ = ["occupieds", "enough_consec_slots", "enough_rounds",
+           "if_simultaneous", "split_chromosome",
+           "aggregate_occupied", "has_even_share",
+           "split_chromosome_per_game", "check_cond_for_each_game"]
 
 def occupieds(c: int) -> List[str]:
     """get all sequences of occupied slots
@@ -28,7 +31,7 @@ def enough_rounds(c: str, rounds: int) -> bool:
     """for this game and category, are the
     number of rounds correct?"""
     return len(occupieds(c)) == rounds
-
+"
 
 def if_simultaneous(c: int, slots: int,
                     first: int, cats: int) -> bool:
@@ -60,7 +63,7 @@ def split_chromosome(c: int, slots: int) -> List[str]:
 
 def aggregate_occupied(c: int, slots: int):
     """ returns a bitstring as long as the total number
-    of slots for the SF. A bit should only have 0 if 
+    of slots for the SF. A bit should only have 0 if
     there are absolutely no games in that slot """
     sections = map(int, split_chromosome(c, slots))
     return reduce(lambda x, y: x | y, sections) | 1 << (ceil(log2(c))-1)

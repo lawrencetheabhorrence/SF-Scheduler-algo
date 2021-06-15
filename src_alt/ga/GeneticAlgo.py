@@ -1,10 +1,11 @@
 import pandas as pd
 import random as r
 from functools import partial
-from data.read_data import read_game_data, read_sf_data
-import ga_methods.selection as sel
-import ga_methods.mutation as mut
-import ga_methods.crossover as cro
+from ga.data.read_data import read_game_data, read_sf_data
+from ga.objective_function.fitness import fitness
+import ga.ga_methods.selection as sel
+import ga.ga_methods.mutation as mut
+import ga.ga_methods.crossover as cro
 
 
 def ch_selection(selection_method, pop, game_src, sf_src):
@@ -31,7 +32,7 @@ def ch_crossover(crossover_method):
 
 
 def generate_chromosome(slots):
-    return random.getrandbits(slots - 1) + (2 ** slots)
+    return r.getrandbits(slots - 1) + (2 ** slots)
 
 
 class GeneticAlgo:
@@ -45,10 +46,10 @@ class GeneticAlgo:
         self.crossover = ch_crossover(crossover_method)
         self.mutation = ch_mutation(mutation_method)
         self.threshold = threshold
-        self.game_data = kwargs["game_data"] if not kwargs["game_data"] is None \
-        else read_game_data(kwargs["game_src"])
-        self.sf_data = kwargs["sf_data"] if not kwargs["sf_data"] is None \
-        else read_sf_data(kwargs["sf_src"])
+        self.game_data = (kwargs["game_data"] if not kwargs["game_data"] is
+                          None else read_game_data(kwargs["game_src"]))
+        self.sf_data = (kwargs["sf_data"] if not kwargs["sf_data"] is None else
+                        read_sf_data(kwargs["sf_src"]))
         self.pop_size = pop_size
         self.mutation_rate = mutation_rate
         self.fitness_src = fitness_src
@@ -75,7 +76,7 @@ class GeneticAlgo:
         return sum(map(lambda x: fitness(x, self.game_data, self.sf_data),
                        self.population)) / len(self.population)
 
-    def genetic_algo(self):
+    def genetic_algo_threshold_prop(self):
         self.init_pop()
         avg_fs = [self.avg_fitness()]
         while True:
@@ -85,6 +86,21 @@ class GeneticAlgo:
                 pd.Series(data=avg_fs, dtype=float,
                           name="Average Fitness")\
                         .to_csv(self.fitness_src, index=True)
-                return max(self.population, key=(lambda x: fitness(x,
-                                                                   self.game_data,
-                                                                   self.sf_data)
+                return max(self.population,
+                           key=(lambda x: fitness(x,
+                                                  self.game_data,
+                                                  self.sf_data)))
+
+    def genetic_algo_fixed_generation(self):
+        self.init_pop()
+        avg_fs = [self.avg_fitness()]
+        for _ in range(self.threshold):
+            self.genetic_algo_cycle()
+            avg_fs.append(self.avg_fitness())
+        pd.Series(data=avg_fs, dtype=float,
+                  name="Average Fitness")\
+            .to_csv(self.fitness_src, index=True)
+        return max(self.population,
+                   key=(lambda x: fitness(x,
+                                          self.game_data,
+                                          self.sf_data)))
