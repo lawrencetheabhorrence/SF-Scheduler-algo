@@ -4,10 +4,7 @@ from itertools import chain
 from functools import reduce
 from typing import Dict, List, Callable
 from ga.helper.bit_helper import bit_slice
-__all__ = ["occupieds", "enough_consec_slots", "enough_rounds",
-           "if_simultaneous", "split_chromosome",
-           "aggregate_occupied", "has_even_share",
-           "split_chromosome_per_game", "check_cond_for_each_game"]
+
 
 def occupieds(c: int) -> List[str]:
     """get all sequences of occupied slots
@@ -31,7 +28,7 @@ def enough_rounds(c: str, rounds: int) -> bool:
     """for this game and category, are the
     number of rounds correct?"""
     return len(occupieds(c)) == rounds
-"
+
 
 def if_simultaneous(c: int, slots: int,
                     first: int, cats: int) -> bool:
@@ -107,6 +104,10 @@ def split_chromosome_per_game(c: int,
 def split_chromosome_per_game_str(c: int,
                                   cats_per_game: Dict[str, int],
                                   slots: int) -> Dict[str, str]:
+    """ The same as split_chromosome_per_game but
+    returns strings. Useful for when you need to preserve the
+    original bitlengths of the sections """
+
     sections = split_chromosome(c, slots)
     end = 0
     game_slices = {}

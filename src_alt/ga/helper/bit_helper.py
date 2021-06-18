@@ -1,5 +1,5 @@
 from typing import Dict
-from math
+import math
 
 
 def locate_bit(cats_per_game: Dict[str, int],

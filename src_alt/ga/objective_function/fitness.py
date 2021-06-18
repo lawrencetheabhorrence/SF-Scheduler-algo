@@ -1,8 +1,8 @@
 from math import ceil, log2
 from typing import Dict
-from .data import read_sf_data, read_game_data
-from .bit_helper import locate_bit
-from .fitness_helper import *
+from ga.data.reader import read_sf_data, read_game_data
+from ga.helper.bit_helper import locate_bit
+import ga.objective_function.fitness_helper as fh
 
 
 def fitness(c,
@@ -17,17 +17,17 @@ def fitness(c,
               'sc1': sc1(c, slots, days),
               'sc2': sc2(c, slots, days)}
     print(scores)
-    return hardReward * (scores['hc3'] + scores['hc4'] + scores['hc5']) \
-        + softPenalty * (scores['sc1'] + scores['sc2'])
+    return (hardReward * (scores['hc3'] + scores['hc4'] + scores['hc5'])
+            + softPenalty * (scores['sc1'] + scores['sc2']))
 
 
 def hc3(c: int, slots_per_round: Dict[str, int],
         cats_per_game: Dict[str, int], slots):
     """ Events of games must have consecutive n timeslots,
     where n is given by the user for a particular game"""
-    return check_cond_for_each_game(c, cats_per_game, slots,
+    return fh.check_cond_for_each_game(c, cats_per_game, slots,
                                     slots_per_round,
-                                    enough_consec_slots)
+                                    fh.enough_consec_slots)
 
 
 def hc4(c: int, cats_per_game: Dict[str, int],
@@ -39,7 +39,7 @@ def hc4(c: int, cats_per_game: Dict[str, int],
 
     for g in major_games:
         pos = locate_bit(cats_per_game, g, 1, 1, slots)
-        if if_simultaneous(c, slots, pos, cats_per_game[g]):
+        if fh.if_simultaneous(c, slots, pos, cats_per_game[g]):
             return 0
     return 1
 
@@ -47,15 +47,15 @@ def hc4(c: int, cats_per_game: Dict[str, int],
 def hc5(c: int, cats_per_game: Dict[str, int],
         rounds_per_game: Dict[str, int], slots: int):
     """ Games must have exactly the given number of rounds """
-    return check_cond_for_each_game(c, cats_per_game, slots,
-                                    rounds_per_game,
-                                    enough_rounds)
+    return fh.check_cond_for_each_game(c, cats_per_game, slots,
+                                       rounds_per_game,
+                                       fh.enough_rounds)
 
 def sc1(c: int, slots: int, days: int):
     """The total number of events per day
     must be evenly distributed over the week."""
-    return has_even_share(aggregate_occupied(c, slots),
-                          slots // days)
+    return fh.has_even_share(fh.aggregate_occupied(c, slots),
+                             slots // days)
 
 
 def centering_score(c: str):
@@ -71,5 +71,5 @@ def sc2(c: int, slots: int, days: int):
     """ Minimize games farther to the starting and
     ending time per day.  (or games closer to the "middle") """
     slots_per_day = slots // days
-    sections = split_chromosome(c, slots_per_day)
+    sections = fh.split_chromosome(c, slots_per_day)
     return sum((centering_score(x) for x in sections))/len(sections)

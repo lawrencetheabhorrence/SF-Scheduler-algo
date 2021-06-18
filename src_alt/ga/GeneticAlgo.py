@@ -1,16 +1,16 @@
 import pandas as pd
 import random as r
 from functools import partial
-from ga.data.read_data import read_game_data, read_sf_data
+from ga.data.reader import read_game_data, read_sf_data
 from ga.objective_function.fitness import fitness
 import ga.ga_methods.selection as sel
 import ga.ga_methods.mutation as mut
 import ga.ga_methods.crossover as cro
 
 
-def ch_selection(selection_method, pop, game_src, sf_src):
+def ch_selection(selection_method):
     return {
-        'rank': sel.rank(pop, game_src, sf_src)
+        'rank': partial(sel.rank)
     }[selection_method]
 
 
@@ -42,9 +42,6 @@ class GeneticAlgo:
                  threshold, pop_size, mutation_rate,
                  fitness_src,
                  **kwargs):
-        self.selection = ch_selection(selection_method)
-        self.crossover = ch_crossover(crossover_method)
-        self.mutation = ch_mutation(mutation_method)
         self.threshold = threshold
         self.game_data = (kwargs["game_data"] if not kwargs["game_data"] is
                           None else read_game_data(kwargs["game_src"]))
@@ -53,6 +50,9 @@ class GeneticAlgo:
         self.pop_size = pop_size
         self.mutation_rate = mutation_rate
         self.fitness_src = fitness_src
+        self.selection = ch_selection(selection_method)
+        self.crossover = ch_crossover(crossover_method)
+        self.mutation = ch_mutation(mutation_method)
 
     def init_pop(self):
         slots = self.sf_data[0]
@@ -64,13 +64,16 @@ class GeneticAlgo:
     def genetic_algo_cycle(self):
         children = []
         while len(children) < len(self.population):
-            parent1 = self.selection()
-            parent2 = self.selection()
+            parent1 = self.selection(self.population,
+                                     self.game_data, self.sf_data)
+            parent2 = self.selection(self.population,
+                                     self.game_data, self.sf_data)
             children.extend(self.crossover(parent1, parent2))
+
         r.shuffle(children)
         m_size = int(self.mutation_rate * len(children))
         self.population = list(map(self.mutation, children[0:m_size]) +
-                    children[m_size:])
+                               children[m_size:])
 
     def avg_fitness(self):
         return sum(map(lambda x: fitness(x, self.game_data, self.sf_data),
@@ -97,10 +100,17 @@ class GeneticAlgo:
         for _ in range(self.threshold):
             self.genetic_algo_cycle()
             avg_fs.append(self.avg_fitness())
-        pd.Series(data=avg_fs, dtype=float,
-                  name="Average Fitness")\
-            .to_csv(self.fitness_src, index=True)
-        return max(self.population,
-                   key=(lambda x: fitness(x,
-                                          self.game_data,
-                                          self.sf_data)))
+            pd.Series(data=avg_fs, dtype=float,
+                      name="Average Fitness")\
+                .to_csv(self.fitness_src, index=True)
+            return max(self.population,
+                       key=(lambda x: fitness(x,
+                                              self.game_data,
+                                              self.sf_data)))
+
+    def ga(self):
+        if 0 <= self <= 1:
+            return self.genetic_algo_threshold_prop()
+        if self >= 1:
+            return self.genetic_algo_fixed_generation()
+        raise ValueError("Threshold must be nonnegative!")

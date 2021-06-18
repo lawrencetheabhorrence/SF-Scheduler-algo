@@ -1,6 +1,7 @@
 import pandas as pd
 __all__ = ["read_game_data", "read_sf_data"]
 
+
 def read_game_data(src="data/game_data.csv"):
     df = pd.read_csv(src, index_col="Games",
                      dtype={'cats': int, 'priority': 'string',
