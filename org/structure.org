@@ -1,0 +1,61 @@
+* MAIN CLASS
+** GENETIC ALGO
+*** FIELDS
+- game_data (dict)
+      - cats
+      - priority_per_game
+      - slots_per_rounds
+      - rounds
+- sf_data (tuple)
+      - days
+      - slots
+- selection_method (str)
+      - rank
+- crossover_method (str)
+      - one_point
+      - n_point
+      - uniform
+- mutation_method (str)
+      - bit_flip
+      - flip_all
+      - uniform
+- threshold (float)
+      - number of generations (>1)
+      - delta_fitness (0 < 1)
+- pop_size
+- mutation_rate
+- population
+
+*** METHODS
+- selection
+- crossover
+- mutation
+- genetic_algo_cycle
+- genetic_algo
+
+* OTHER MODULES
+** PACKAGE: ga_methods
+*** crossover (module)
+*** selection (module)
+*** mutation (module)
+*** population_initialization (module)
+** PACKAGE: ga
+*** GeneticAlgo (class)
+*** ga_methods (package)
+*** objective_function (package)
+*** data (package)
+** PACKAGE: objective_function
+*** fitness
+*** fitness_helper
+** PACKAGE: helper
+*** bit_helper
+** PACKAGE: data
+*** reader
+*** output
+
+* FILE STRUCTURE
+** src
+*** PACKAGE ga
+**** PACKAGE objective_function
+**** PACKAGE ga_methods
+**** PACKAGE data

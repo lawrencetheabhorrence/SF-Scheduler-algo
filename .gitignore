@@ -1,7 +1,2 @@
-*.*~
-*.swp
-*.un*
-__init__.py
-__pycache__
-*.pyc
-org
+src
+10-powerline-symbols.conf
