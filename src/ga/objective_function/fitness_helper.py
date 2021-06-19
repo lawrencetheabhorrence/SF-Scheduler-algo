@@ -3,7 +3,7 @@ from math import ceil, log2
 from itertools import chain
 from functools import reduce
 from typing import Dict, List, Callable
-from .bit_helper import bit_slice
+from ga.helper.bit_helper import bit_slice
 
 
 def occupieds(c: int) -> List[str]:
@@ -60,7 +60,7 @@ def split_chromosome(c: int, slots: int) -> List[str]:
 
 def aggregate_occupied(c: int, slots: int):
     """ returns a bitstring as long as the total number
-    of slots for the SF. A bit should only have 0 if 
+    of slots for the SF. A bit should only have 0 if
     there are absolutely no games in that slot """
     sections = map(int, split_chromosome(c, slots))
     return reduce(lambda x, y: x | y, sections) | 1 << (ceil(log2(c))-1)
@@ -104,6 +104,10 @@ def split_chromosome_per_game(c: int,
 def split_chromosome_per_game_str(c: int,
                                   cats_per_game: Dict[str, int],
                                   slots: int) -> Dict[str, str]:
+    """ The same as split_chromosome_per_game but
+    returns strings. Useful for when you need to preserve the
+    original bitlengths of the sections """
+
     sections = split_chromosome(c, slots)
     end = 0
     game_slices = {}

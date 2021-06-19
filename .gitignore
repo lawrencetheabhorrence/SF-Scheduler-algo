@@ -1,6 +1,4 @@
+10-powerline-symbols.conf
 *.*~
 *.swp
-*.un*
-__init__.py
 __pycache__
-*.pyc

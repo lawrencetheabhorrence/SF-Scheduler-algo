@@ -1,23 +1,7 @@
-import pandas as pd
 import numpy as np
-from .objective_helper import split_chromosome_per_game_str
-
-
-def read_game_data(src="data/game_data.csv"):
-    df = pd.read_csv(src, index_col="Games",
-                     dtype={'cats': int, 'priority': 'string',
-                            'slots/round': int, 'rounds': int})
-    return df.to_dict()
-
-
-def read_sf_data(src="data/sf_data.csv"):
-    df = pd.read_csv(src,
-                     dtype={'slots': int,
-                            'days': int,
-                            'minutes_per_slot': int,
-                            'start_time': str,
-                            'start_date': str})
-    return (df['slots'][0], df['days'][0])
+import pandas as pd
+from ga.data.reader import read_sf_data, read_game_data
+from ga.objective_function.fitness_helper import split_chromosome_per_game_str
 
 
 def split_sched(c, slots):
@@ -39,12 +23,12 @@ def place_events_in_sched(c: str, event_name: str, sched: pd.DataFrame):
 def generate_empty_scheds(sf_data):
     """ generates a list of dataframes (one per day),
     with no events but with time indexes corresponding to time slots """
-    slots_per_day = sf_data['slots'][0] // sf_data['days'][0]
-    dates = pd.date_range(sf_data['start_date'][0] + ' ' +
-                          sf_data['start_time'][0],
-                          periods=sf_data['days'][0])
+    slots_per_day = sf_data['slots'] // sf_data['days']
+    dates = pd.date_range(sf_data['start_date'] + ' ' +
+                          sf_data['start_time'],
+                          periods=sf_data['days'])
     time_ranges = (pd.date_range(d, periods=slots_per_day,
-                                 freq=f"{sf_data['minutes_per_slot'][0]}T")
+                                 freq=f"{sf_data['minutes_per_slot']}T")
                    for d in dates)
     data = [''] * slots_per_day
     return [pd.DataFrame(index=tr,
@@ -52,26 +36,17 @@ def generate_empty_scheds(sf_data):
                          data=data)
             for tr in time_ranges]
 
-
-def bits_to_sched(c,
-                  sf_src="data/sf_data.csv",
-                  game_src="data/game_data.csv"):
+def bits_to_sched(c, sf_data, game_data):
     """ transforms a complete chromosome into a schedule in a
     csv """
-    sf_data = pd.read_csv(sf_src,
-                          dtype={'slots': int, 'days': int,
-                                 'minutes_per_slot': int,
-                                 'start_time': str,
-                                 'start_date': str})
-    game_data = read_game_data(game_src)
 
-    slots_per_day = sf_data['slots'][0] // sf_data['days'][0]
+    slots_per_day = sf_data['slots'] // sf_data['days']
 
     # dictionary with {g: []} where g is a game and [] is a list of
     # bitstrings corresponding to schedules of categories of games
     sched_per_game = split_chromosome_per_game_str(c,
                                                    game_data['cats'],
-                                                   sf_data['slots'][0])
+                                                   sf_data['slots'])
 
     # dictionary with {g: [[]]} where g is a game and the outer list
     # corresponds to the categories of a game
@@ -88,11 +63,11 @@ def bits_to_sched(c,
     # and the keys are a numpy array of bitstrings
     # that correspond to schedules for a day for the categories of a game
     scheds_per_day = [{g: sched_per_game[g][:, d] for g in sched_per_game}
-                      for d in range(sf_data['days'][0])]
+                      for d in range(sf_data['days'])]
 
     empty_scheds = generate_empty_scheds(sf_data)
 
-    for day in range(sf_data['days'][0]):
+    for day in range(sf_data['days']):
         for game in scheds_per_day[day]:
             for cat, sched in enumerate(scheds_per_day[day][game], start=1):
                 event_name = f"{game} Cat {cat}"

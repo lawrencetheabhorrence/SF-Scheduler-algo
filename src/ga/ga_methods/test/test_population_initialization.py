@@ -1,6 +1,7 @@
 import random
-from ..population_initialization import generate_chromosome
-from ..population_initialization import init_pop
+from ga.ga_methods.population_initialization import \
+        generate_chromosome, init_pop
+from ga.data.reader import read_game_data, read_sf_data
 
 
 def test_generate_chromosome():
@@ -16,6 +17,10 @@ def test_random_chromosome_lengths():
 
 
 def test_init_pop():
-    p = init_pop(50, "test/data/test_game_data.csv",
-                 "test/data/test_sf_data.csv")
+    root = "~/GitHub/SF-Scheduler-algo/src/ga/data/test/"
+    game_data = \
+        read_game_data(root + "test_game_data.csv")
+    sf_data = \
+        read_sf_data(root + "test_sf_data.csv")
+    p = init_pop(50, game_data, sf_data)
     assert len(p) == 50 and int(p[0]).bit_length() == (3 * 2 * 5) + 1
