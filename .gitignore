@@ -1,2 +1,4 @@
-src
 10-powerline-symbols.conf
+*.*~
+*.swp
+__pycache__
