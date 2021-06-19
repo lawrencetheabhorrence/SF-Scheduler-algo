@@ -9,5 +9,5 @@ def bit_flip(c: int, k: int):
 
 
 def flip_all(c: int):
-    """ flip all bits (unsigned 32bit int)"""
-    return ~c & 0xffffffff
+    """ flip all bits (unsigned 64bit int)"""
+    return ~c & 0xffffffffffffffff

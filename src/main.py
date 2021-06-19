@@ -4,7 +4,7 @@ from ga.data.reader import read_game_data, read_sf_data
 
 
 def __main__():
-    root = '~/GitHub/SF-Scheduler-algo/src/ga'
+    root = '~/GitHub/SF-Scheduler-algo/src/'
 
     # test parameters
     ga_params = {
@@ -14,9 +14,9 @@ def __main__():
         'threshold': 0.01,
         'pop_size': 10,
         'mutation_rate': 0.1,
-        'game_src': root + '/data/test/test_game_data.csv',
-        'sf_src': root + '/data/test/test_sf_data.csv',
-        'fitness_src': root + '/data/test/test_fitness.csv',
+        'game_src': root + 'data/model/big_game_data.csv',
+        'sf_src': root + 'data/model/big_sf_data.csv',
+        'fitness_src': root + 'data/model/big_fitness.csv',
         'crossover_params': None
     }
 
