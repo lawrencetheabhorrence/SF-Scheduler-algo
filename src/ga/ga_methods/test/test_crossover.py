@@ -24,10 +24,8 @@ def test_n_point():
 
     # initialize break_points
     k_length = r.randrange(1, 9)
-    ks = [0]*(k_length - 1) + [9]
-    for i in range(1, len(ks)):
-        while ks[i] <= ks[i-1]:
-            ks[i] = r.randrange(1, 9)
+    ks = [0,9] + r.sample(range(1,9), k=k_length)
+    ks.sort()
 
     result = list(map(lambda x: bin(x)[2:], cnr.n_point(c1, c2, ks)))
 

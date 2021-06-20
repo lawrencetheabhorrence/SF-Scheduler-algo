@@ -1,13 +1,13 @@
 from math import ceil, log2
 from typing import Dict
 from ga.data.reader import read_sf_data, read_game_data
-from ga.helper.bit_helper import locate_bit
+from ga.helper.bit_helper import locate_bit, bitlength
 import ga.objective_function.fitness_helper as fh
 
 
 def fitness(c,
             game_data, sf_data,
-            hardReward=100, softPenalty=-20):
+            hardReward=120, softPenalty=-20):
     """ fitness value """
     cats, priority, rounds, slots_per_round = game_data.values()
     slots, days = sf_data['slots'], sf_data['days']
@@ -16,9 +16,9 @@ def fitness(c,
               'hc5': hc5(c, cats, rounds, slots),
               'sc1': sc1(c, slots, days),
               'sc2': sc2(c, slots, days)}
-    print(scores)
-    return (hardReward * (scores['hc3'] + scores['hc4'] + scores['hc5'])
-            + softPenalty * (scores['sc1'] + scores['sc2']))
+    print(scores, bitlength(c))
+    return (hardReward * (10*scores['hc3'] + 0.7*scores['hc4'] + 30*scores['hc5'])
+            + softPenalty * (0.03*scores['sc1'] + 10*scores['sc2']))
 
 
 def hc3(c: int, slots_per_round: Dict[str, int],

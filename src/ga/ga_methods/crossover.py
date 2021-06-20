@@ -25,16 +25,13 @@ def n_point(c1: int, c2: int, n_breaks=3):
     # the breakpoints should start with 0 and
     # end with n but this is also adjusted in the
     # non random function too.
-    ks = [0]*(n_breaks - 1) + [n]
-    for i in range(1, n_breaks):
-        while ks[i] <= ks[i-1]:
-            ks[i] = r.randrange(1, n)
+    ks = [0,n] + r.sample(range(1,9), k=n_breaks-1)
 
     return cnr.n_point(c1, c2, ks)
 
 
-def uniform(c1: int, c2: int):
+def uniform(c1: int, c2: int, children=2):
     """ uniform crossover, the
     method is already inherently
     randomized. """
-    return cnr.uniform(c1, c2)
+    return cnr.uniform(c1, c2, children)

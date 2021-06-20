@@ -6,7 +6,8 @@ __all__ = ["one_point", "n_point", "uniform"]
 
 
 def get_bits_and_len(c1: int, c2: int):
-    return (bitlength(c1), bin(c1)[2:], bin(c2)[2:])
+    return (bitlength(abs(c1)),
+            bin(abs(c1))[2:], bin(abs(c2))[2:])
 
 
 def one_point(c1: int, c2: int, k=None):
@@ -43,5 +44,8 @@ def n_point(c1: int, c2: int, ks=None):
 
 def uniform(c1: int, c2: int, children=None):
     n, b1, b2 = get_bits_and_len(c1, c2)
+    if len(b1) != len(b2):
+        raise ValueError(f'parents do not have the same length ({len(b1)},\
+                         {len(b2)})')
     return [int(''.join((r.choice((b1[i], b2[i])) for i in range(n))), 2)
             for c in range(children)]

@@ -6,6 +6,7 @@ from ga.objective_function.fitness import fitness
 import ga.ga_methods.selection as sel
 import ga.ga_methods.mutation as mut
 import ga.ga_methods.crossover as cro
+from ga.helper.bit_helper import bitlength
 
 
 def ch_selection(selection_method):
@@ -14,10 +15,10 @@ def ch_selection(selection_method):
     }[selection_method]
 
 
-def ch_mutation(mutation_method):
+def ch_mutation(mutation_method, length=None):
     return {
         'bit_flip': partial(mut.bit_flip),
-        'flip_all': partial(mut.flip_all),
+        'flip_all': partial(mut.flip_all, length),
         'uniform': partial(mut.uniform)
     }[mutation_method]
 
@@ -25,16 +26,18 @@ def ch_mutation(mutation_method):
 def ch_crossover(crossover_method, crossover_params):
     n_breaks = (None if crossover_params is None
                 else crossover_params.get('n_breaks'))
+    children = (None if crossover_params is None
+                else crossover_params.get('children'))
     return {
         'one_point': partial(cro.one_point),
         'n_point': partial(cro.n_point,
                            n_breaks=n_breaks),
-        'uniform': partial(cro.uniform)
+        'uniform': partial(cro.uniform, children=children)
     }[crossover_method]
 
 
 def generate_chromosome(slots):
-    return r.getrandbits(slots - 1) + (2 ** slots)
+    return r.getrandbits(slots) + (2 ** slots)
 
 
 class GeneticAlgo:
@@ -58,7 +61,12 @@ class GeneticAlgo:
         self.crossover_params = crossover_params
         self.crossover = ch_crossover(crossover_method,
                                       crossover_params)
-        self.mutation = ch_mutation(mutation_method)
+        slots = self.sf_data['slots']
+        games = len(self.game_data['cats'])
+        cats = sum(self.game_data['cats'].values())
+        length = slots * games * cats + 1
+        self.mutation = ch_mutation(mutation_method,
+                                    length)
 
     def init_pop(self):
         print(self.sf_data)
@@ -68,6 +76,7 @@ class GeneticAlgo:
         print(slots, games, cats)
         self.population = [generate_chromosome(slots * games * cats)
                            for _ in range(self.pop_size)]
+        print(bitlength(self.population[0]))
 
     def genetic_algo_cycle(self):
         children = []

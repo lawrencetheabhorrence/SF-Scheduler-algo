@@ -14,7 +14,7 @@ from ..data.reader import read_game_data, read_sf_data
 
 
 def generate_chromosome(slots):
-    return random.getrandbits(slots - 1) + (2 ** slots)
+    return random.getrandbits(slots) + 2 ** slots
 
 
 def init_pop(pop_size, game_data, sf_data):

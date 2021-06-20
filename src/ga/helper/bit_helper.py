@@ -32,4 +32,4 @@ def bit_slice(start: int, end: int, bits: int) -> int:
 
 def bitlength(n: int):
     """ bitlength for numpy ints """
-    return math.ceil(math.log2(n))
+    return math.ceil(math.log2(abs(n)))

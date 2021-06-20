@@ -12,7 +12,7 @@ def test_bit_flip():
 
 def test_flip_all():
     c = 2**8 | r.randrange(2**8 + 1)
-    assert c & mnr.flip_all(c) == 0
+    assert c & mnr.flip_all(c) == 2**8
 
 
 def test_uniform():
