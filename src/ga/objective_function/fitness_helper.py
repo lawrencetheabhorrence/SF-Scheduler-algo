@@ -3,14 +3,12 @@ import numpy as np
 from itertools import chain
 from functools import reduce
 from typing import Dict, List, Callable
-import ga.helper.Chromosome as chro
-from ga.helper.bit_helper import bit_slice, bitlength
 
 
 def occupieds(c) -> List[str]:
     """get all sequences of occupied slots
     in a chromosome """
-    bitstr = ''.join(c.bitstring)
+    bitstr = ''.join(map(str,c))
     # We retain this as a list of strings as
     # there is no place where we will need to
     # interact with the individual bits
@@ -30,7 +28,7 @@ def enough_consec_slots(c, min_slots) -> bool:
     # We can easily now map len to the whole array
     # By executing map_len(x)
     # It also gives a very nice performance gain.
-    map_len = np.vectorize(len)
+    map_len = np.vectorize(len, otypes=[int])
 
     # cond will return a mask, replacing each element with
     # True if it passes the condition and False otherwise
@@ -50,7 +48,7 @@ def if_simultaneous(c, slots, first, cats) -> bool:
     Does this game have a simultaneous slot occupied
     in two different categories?
     """
-    bitstr = c.bitstring
+    bitstr = c
     if cats == 1:
         return np.bitwise_and(bitstr[0:slots], bitstr[slots:slots*2]).sum() > 0
 
@@ -68,30 +66,29 @@ def if_simultaneous(c, slots, first, cats) -> bool:
 def split_chromosome(c, slots):
     """ splits chromosome into sections as long
     as the total timeslots for the SF """
-    return c.bitstring.reshape(c.size // slots, slots)
+    if c.size % slots > 0:
+        raise ValueError(f"We cannot perfectly divide the schedule with {slots} slots!")
+    return np.reshape(c, (c.size // slots, slots))
 
 def aggregate_occupied(c, slots):
     """ returns a bitstring as long as the total number
     of slots for the SF. A bit should only have 0 if
     there are absolutely no games in that slot """
     sections = split_chromosome(c, slots)
-    return np.bitwise_and.reduce(sections, axis=0)
+    return np.bitwise_or.reduce(sections, axis=0)
 
 def has_even_share(c, section_len):
     """ when splitting a bitstring into groups of
     fixed width, there should be an equal number
     of 1's in each group (or as equal as possible)"""
-    bitstr = c.bitstring
-    n_occupied_slots = bitstr.sum()
+    n_occupied_slots = c.sum()
     optimal_occupieds_per_section = n_occupied_slots / section_len
     n_occupied_per_section = split_chromosome(c, section_len).sum(axis=1)
     map_dist = np.vectorize(lambda x: abs(x - optimal_occupieds_per_section))
     return map_dist(n_occupied_per_section).sum() / n_occupied_per_section.size
 
 
-def split_chromosome_per_game(c: int,
-                              cats_per_game: Dict[str, int],
-                              slots: int) -> Dict[str, int]:
+def split_chromosome_per_game(c, cats_per_game, slots):
     """
     Splits chromosome into sections per game-chromosome.
     basically each section should be as long as the number of
@@ -107,25 +104,8 @@ def split_chromosome_per_game(c: int,
     game_slices = {}
     for g in cats_per_game:
 
-        game_slices[g] = list(map(lambda x: int(x, 2),
-                                  sections[end:end+cats_per_game[g]]))
+        game_slices[g] = np.array(sections[end:end+cats_per_game[g],:])
         end += cats_per_game[g]
-    return game_slices
-
-def split_chromosome_per_game_str(c: int,
-                                  cats_per_game: Dict[str, int],
-                                  slots: int) -> Dict[str, str]:
-    """ The same as split_chromosome_per_game but
-    returns strings. Useful for when you need to preserve the
-    original bitlengths of the sections """
-
-    sections = split_chromosome(c, slots)
-    end = 0
-    game_slices = {}
-    for g in cats_per_game:
-        game_slices[g] = list(sections[end:end+cats_per_game[g]])
-        end += cats_per_game[g]
-
     return game_slices
 
 
@@ -147,4 +127,4 @@ def check_cond_for_each_game(c: int,
     fulfilled = list(chain(*[[pred(game_slice, min_per_game[g])
                               for game_slice in slices_per_game[g]]
                              for g in slices_per_game]))
-    return 1 if all(fulfilled) else 0
+    return 1 if np.all(fulfilled) else 0

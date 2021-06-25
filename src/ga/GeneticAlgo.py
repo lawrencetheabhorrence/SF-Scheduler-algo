@@ -1,12 +1,12 @@
-import pandas as pd
 import random as r
+import pandas as pd
 from functools import partial
 from ga.data.reader import read_game_data, read_sf_data
 from ga.objective_function.fitness import fitness
+from ga.ga_methods.population_initialization import init_pop
 import ga.ga_methods.selection as sel
 import ga.ga_methods.mutation as mut
 import ga.ga_methods.crossover as cro
-from ga.helper.bit_helper import bitlength
 
 
 def ch_selection(selection_method):
@@ -35,9 +35,6 @@ def ch_crossover(crossover_method, crossover_params):
         'uniform': partial(cro.uniform, children=children)
     }[crossover_method]
 
-
-def generate_chromosome(slots):
-    return r.getrandbits(slots) + (2 ** slots)
 
 
 class GeneticAlgo:
@@ -69,14 +66,9 @@ class GeneticAlgo:
                                     length)
 
     def init_pop(self):
-        print(self.sf_data)
-        slots = self.sf_data['slots']
-        games = len(self.game_data['cats'])
-        cats = sum(self.game_data['cats'].values())
-        print(slots, games, cats)
-        self.population = [generate_chromosome(slots * games * cats)
-                           for _ in range(self.pop_size)]
-        print(bitlength(self.population[0]))
+        self.population = init_pop(self.pop_size,
+                                   self.game_data,
+                                   self.sf_data)
 
     def genetic_algo_cycle(self):
         children = []

@@ -1,14 +1,16 @@
-import random as r
-from ga.helper.bit_helper import is_set, bitlength
+import numpy as np
 __all__ = ['bit_flip', 'flip_all']
 
 
-def bit_flip(c: int, k: int):
+def bit_flip(c, k: int):
     """ flip bit at position k """
-    return c - 2**k if is_set(k, c) > 0 else c + 2**k
+    cop = c.copy()
+    cop[k] = abs(c[k]-1)
+    return cop
 
+def flip_bit(b):
+    return abs(b-1)
 
-def flip_all(c: int, length=None):
+def flip_all(c):
     """ flip all bits (unsigned 64bit int)"""
-    n = bitlength(c)
-    return abs(2 ** (n-1) | ~c)
+    return np.vectorize(flip_bit)(c.copy())

@@ -1,6 +1,4 @@
 from typing import Dict
-import math
-
 
 def locate_bit(cats_per_game: Dict[str, int],
                game: str, cat: int,
@@ -13,23 +11,3 @@ def locate_bit(cats_per_game: Dict[str, int],
             break
         partial += cats_per_game[g] * slots
     return slot + (cat - 1) * slots + partial
-
-
-def is_set(n: int, bits: int) -> int:
-    """ is the byte at the nth position 1 ?
-    (1-indexed)
-    """
-    lone_bit = 0b1 << n
-    return ((bits & lone_bit) >> n) % 2  # 1 if true, 0 otherwise
-
-
-def bit_slice(start: int, end: int, bits: int) -> int:
-    """ returns a bit string from start pos
-    to end pos (inclusive and 1-indexed) """
-    bits = bin(bits)
-    return int(bits[start+1:end+2], 2)
-
-
-def bitlength(n: int):
-    """ bitlength for numpy ints """
-    return math.ceil(math.log2(abs(n)))

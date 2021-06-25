@@ -1,51 +1,67 @@
+import numpy as np
 import random as r
-import math
 from typing import List
-from ga.helper.bit_helper import bitlength
 __all__ = ["one_point", "n_point", "uniform"]
 
 
-def get_bits_and_len(c1: int, c2: int):
-    return (bitlength(abs(c1)),
-            bin(abs(c1))[2:], bin(abs(c2))[2:])
-
-
-def one_point(c1: int, c2: int, k=None):
-    n, b1, b2 = get_bits_and_len(c1, c2)
+def one_point(c1, c2, k=None):
+    n = c1.size
     if k is None:
         k = n // 2
-    return (int(b1[0:k+1] + b2[k+1:n], 2), int(b2[0:k+1] + b1[k+1:n], 2))
+    return(np.concatenate((c1[:k], c2[k:])),
+           np.concatenate((c2[:k], c1[k:])))
 
 
-def split_ks(c1: str, ks: List[int]):
-    """ split according to breakpoints """
-    n = len(c1)
-    if ks[0] != 0:
-        ks = [0] + ks
-    if ks[-1] != n:
-        ks.append(n)
-
-    return [c1[ks[i]:ks[i+1]] for i in range(len(ks)-1)]
-
-
-def n_point(c1: int, c2: int, ks=None):
-    n, b1, b2 = get_bits_and_len(c1, c2)
-
+def n_point(c1, c2, ks=None):
+    n = c1.size
     if ks is None:
         return one_point(c1, c2, k=r.randrange(n))
 
-    b1, b2 = split_ks(b1, ks), split_ks(b2, ks)
-    n = len(b1)
-    return (int(''.join((b1[i] if i % 2 == 0 else b2[i]
-                         for i in range(n))), 2),
-            int(''.join((b2[i] if i % 2 == 0 else b1[i]
-                         for i in range(n))), 2))
+    b1, b2 = np.split(c1, ks), np.split(c2, ks)
+    print(b1, b2)
+
+    # this "trick" allows us to concatenate two
+    # arrays while alternating the elements
+    # b1[::2] takes every other element starting from
+    # index 0, b1[1::2] is the same but from index 1
+    # the ravel would store our 2d array formed
+    # by stacking b1 and b2 vertically as a
+    # 1d array.
+    # 'F' stands for Fortran style ordering
+    # or column major ordering
+    # https://en.wikipedia.org/wiki/Row-_and_column-major_order
+    merged_slices1 = np.hstack(
+        np.ravel([b1[0::2], b2[1::2]], 'F'))
+    merged_slices2 = np.hstack(
+        np.ravel([b2[0::2], b1[1::2]], 'F'))
+    print(merged_slices1, merged_slices2)
+
+    return np.vstack((merged_slices1, merged_slices2))
 
 
-def uniform(c1: int, c2: int, children=None):
-    n, b1, b2 = get_bits_and_len(c1, c2)
-    if len(b1) != len(b2):
-        raise ValueError(f'parents do not have the same length ({len(b1)},\
-                         {len(b2)})')
-    return [int(''.join((r.choice((b1[i], b2[i])) for i in range(n))), 2)
-            for c in range(children)]
+def uniform(c1, c2, children=None):
+    n = c1.size
+
+    # This should gives us rows
+    # where each row (index r) with
+    # [c1[r], c2[r]]
+    choices = np.vstack((c1, c2)).T
+
+    offspring = []
+
+    for x in range(children):
+        # we randomly sample indices by
+        # simply generating a random array and
+        # getting the indices of each element
+        # if the array were "sorted" by row
+        # this is similar to actually shuffling the array row wise
+        # this method is also much faster than using
+        # np.random.choice
+        # https://stackoverflow.com/questions/45437988/numpy-random-choice-to-produce-a-2d-array-with-all-unique-values/45438143#45438143
+        idx = np.random.rand(*choices.shape).argsort(1)
+
+        # we can now use these indices along each row
+        # on our choices
+        offspring.append(np.take_along_axis(choices, idx, axis=1)[:,0].T)
+
+    return offspring

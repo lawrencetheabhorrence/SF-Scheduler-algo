@@ -10,11 +10,12 @@ The initial population size is 50,
 but another value can be passed to the initialization function.
 """
 import random
+import numpy as np
 from ..data.reader import read_game_data, read_sf_data
 
 
 def generate_chromosome(slots):
-    return random.getrandbits(slots) + 2 ** slots
+    return np.random.randint(low=0, high=2, size=slots)
 
 
 def init_pop(pop_size, game_data, sf_data):

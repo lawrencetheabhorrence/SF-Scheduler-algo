@@ -1,51 +1,59 @@
 import random as r
+import numpy as np
+import numpy.testing as test
+from ga.ga_methods.population_initialization import generate_chromosome
 from ..non_rand import crossover_non_rand as cnr
-from ga.helper.bit_helper import bitlength
+
 
 def generate_parents(n=8):
     """ generates two random parents with bitlength n """
-    return (2**n | r.randrange(2**n), 2**n | r.randrange(2**n))
+    return (generate_chromosome(n), generate_chromosome(n))
 
 def test_one_point():
-    c1 = 0b11111
-    c2 = 0b10101
+    c1 = np.array([1,1,1,1,1])
+    c2 = np.array([1,0,1,0,1])
     result = cnr.one_point(c1, c2, 2)
-    assert result == (0b11101, 0b10111)
+    test.assert_array_equal(result[0],[1,1,1,0,1])
+    test.assert_array_equal(result[1],[1,0,1,1,1])
 
-def test_split_ks():
-    test = "Hello World~"
-    ks = [0, 3, 5, 7]
-    result = cnr.split_ks(test, ks)
-    assert result == [test[0:3], test[3:5], test[5:7], test[7:]]
 
 def test_n_point():
     # generate 2 numbers with bitlength of 9
     c1, c2 = generate_parents()
+    print(c1, c2)
+    n = c1.size
 
     # initialize break_points
-    k_length = r.randrange(1, 9)
-    ks = [0,9] + r.sample(range(1,9), k=k_length)
-    ks.sort()
+    rng = np.random.default_rng()
+    ks = rng.choice(np.arange(1, n),
+                    size=3,
+                    shuffle=False,
+                    replace=False)
+    ks = np.sort(ks)
 
-    result = list(map(lambda x: bin(x)[2:], cnr.n_point(c1, c2, ks)))
+    print(ks)
 
-    c1 = bin(c1)[2:]
-    c2 = bin(c2)[2:]
+    result = cnr.n_point(c1, c2, ks)
+    print(result)
+    ks = np.concatenate(([0], ks, [n]))
 
-    assert all(((c1[ks[i]:ks[i+1]] == result[0][ks[i]:ks[i+1]]
-                 if i % 2 == 0
-                 else c2[ks[i]:ks[i+1]] == result[0][ks[i]:ks[i+1]])
-                for i in range(len(ks) - 1)))
 
-    assert all(((c2[ks[i]:ks[i+1]] == result[1][ks[i]:ks[i+1]]
-                 if i % 2 == 0
-                 else c1[ks[i]:ks[i+1]] == result[1][ks[i]:ks[i+1]])
-                for i in range(len(ks) - 1)))
+    for i in range(len(ks) - 1):
+        if i % 2 == 0:
+            test.assert_array_equal(c1[ks[i]:ks[i+1]],
+                                    result[0,ks[i]:ks[i+1]])
+            test.assert_array_equal(c2[ks[i]:ks[i+1]],
+                                    result[1,ks[i]:ks[i+1]])
+        else:
+            test.assert_array_equal(c1[ks[i]:ks[i+1]],
+                                    result[1,ks[i]:ks[i+1]])
+            test.assert_array_equal(c2[ks[i]:ks[i+1]],
+                                    result[0,ks[i]:ks[i+1]])
 
 
 def test_uniform():
     c1, c2 = generate_parents()
     result = cnr.uniform(c1, c2, 3)
+    print(result)
     assert len(result) == 3
-
-    assert all((n := bitlength(c1) == bitlength(x) for x in result))
+    assert result[0].shape == c1.shape

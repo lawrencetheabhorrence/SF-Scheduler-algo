@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from ga.data.reader import read_sf_data, read_game_data
-from ga.objective_function.fitness_helper import split_chromosome_per_game_str
+from ga.objective_function.fitness_helper import split_chromosome_per_game
 
 
 def split_sched(c, slots):
@@ -44,16 +44,16 @@ def bits_to_sched(c, sf_data, game_data):
 
     # dictionary with {g: []} where g is a game and [] is a list of
     # bitstrings corresponding to schedules of categories of games
-    sched_per_game = split_chromosome_per_game_str(c,
-                                                   game_data['cats'],
-                                                   sf_data['slots'])
+    sched_per_game = split_chromosome_per_game(c,
+                                               game_data['cats'],
+                                               sf_data['slots'])
 
     # dictionary with {g: [[]]} where g is a game and the outer list
     # corresponds to the categories of a game
     # the inner list is a list of bitstrings corresponding to scheds
     # for one day
     sched_per_game = {g: np.array([split_sched(x, slots_per_day)
-                                   for x in sched_per_game[g]])
+                                   for x in sched_per_game[g,:]])
                       for g in sched_per_game}
 
     # suppose we want to get the schedules only for one day,
