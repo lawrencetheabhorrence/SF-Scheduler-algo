@@ -1,8 +1,9 @@
-import pandas as pd
 import random as r
+import pandas as pd
 from functools import partial
 from ga.data.reader import read_game_data, read_sf_data
 from ga.objective_function.fitness import fitness
+from ga.ga_methods.population_initialization import init_pop
 import ga.ga_methods.selection as sel
 import ga.ga_methods.mutation as mut
 import ga.ga_methods.crossover as cro
@@ -14,10 +15,10 @@ def ch_selection(selection_method):
     }[selection_method]
 
 
-def ch_mutation(mutation_method):
+def ch_mutation(mutation_method, length=None):
     return {
         'bit_flip': partial(mut.bit_flip),
-        'flip_all': partial(mut.flip_all),
+        'flip_all': partial(mut.flip_all, length),
         'uniform': partial(mut.uniform)
     }[mutation_method]
 
@@ -25,16 +26,15 @@ def ch_mutation(mutation_method):
 def ch_crossover(crossover_method, crossover_params):
     n_breaks = (None if crossover_params is None
                 else crossover_params.get('n_breaks'))
+    children = (None if crossover_params is None
+                else crossover_params.get('children'))
     return {
         'one_point': partial(cro.one_point),
         'n_point': partial(cro.n_point,
                            n_breaks=n_breaks),
-        'uniform': partial(cro.uniform)
+        'uniform': partial(cro.uniform, children=children)
     }[crossover_method]
 
-
-def generate_chromosome(slots):
-    return r.getrandbits(slots - 1) + (2 ** slots)
 
 
 class GeneticAlgo:
@@ -58,16 +58,17 @@ class GeneticAlgo:
         self.crossover_params = crossover_params
         self.crossover = ch_crossover(crossover_method,
                                       crossover_params)
-        self.mutation = ch_mutation(mutation_method)
-
-    def init_pop(self):
-        print(self.sf_data)
         slots = self.sf_data['slots']
         games = len(self.game_data['cats'])
         cats = sum(self.game_data['cats'].values())
-        print(slots, games, cats)
-        self.population = [generate_chromosome(slots * games * cats)
-                           for _ in range(self.pop_size)]
+        length = slots * games * cats + 1
+        self.mutation = ch_mutation(mutation_method,
+                                    length)
+
+    def init_pop(self):
+        self.population = init_pop(self.pop_size,
+                                   self.game_data,
+                                   self.sf_data)
 
     def genetic_algo_cycle(self):
         children = []

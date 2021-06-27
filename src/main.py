@@ -9,15 +9,15 @@ def __main__():
     # test parameters
     ga_params = {
         'selection_method': 'rank',
-        'crossover_method': 'one_point',
-        'mutation_method': 'flip_all',
-        'threshold': 0.01,
-        'pop_size': 10,
+        'crossover_method': 'n_point',
+        'mutation_method': 'uniform',
+        'threshold': 0.001,
+        'pop_size': 50,
         'mutation_rate': 0.1,
         'game_src': root + 'data/model/big_game_data.csv',
         'sf_src': root + 'data/model/big_sf_data.csv',
         'fitness_src': root + 'data/model/big_fitness.csv',
-        'crossover_params': None
+        'crossover_params': {'children': 2, 'n_breaks': 5}
     }
 
     ga_obj = GeneticAlgo(**ga_params)

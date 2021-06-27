@@ -1,20 +1,24 @@
+import numpy as np
 import random as r
+from ga.ga_methods.population_initialization import generate_chromosome
 import ga.ga_methods.non_rand.mutation_non_rand as mnr
 import ga.ga_methods.mutation as mt
-from ga.helper.bit_helper import bitlength
 
 
 def test_bit_flip():
     c = 0b11101101
-    assert mnr.bit_flip(c, 1) == 0b11101111
-    assert mnr.bit_flip(c, 2) == 0b11101001
+    c = np.array([1,1,1,0,1,1,0,1])
+    np.testing.assert_array_equal(mnr.bit_flip(c,1),
+                                  np.array([1,0,1,0,1,1,0,1]))
+    np.testing.assert_array_equal(mnr.bit_flip(c, 2),
+                                  np.array([1,1,0,0,1,1,0,1]))
 
 
 def test_flip_all():
-    c = 2**8 | r.randrange(2**8 + 1)
-    assert c & mnr.flip_all(c) == 0
+    c = generate_chromosome(8)
+    assert np.bitwise_and(c, mnr.flip_all(c)).sum() == 0
 
 
 def test_uniform():
-    c = 2 ** 8 | r.randrange(2**8)
-    assert bitlength(c) == bitlength(mt.uniform(c))
+    c = generate_chromosome(8)
+    assert c.size == mt.uniform(c).size
