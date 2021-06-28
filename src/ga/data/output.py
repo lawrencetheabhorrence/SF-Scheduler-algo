@@ -6,14 +6,14 @@ from ga.objective_function.fitness_helper import split_chromosome_per_game
 
 def split_sched(c, slots):
     """ splits bitstrings w/o prefix into sections """
-    return [c[s: s + slots] for s in range(0, len(c), slots)]
+    return [c[s: s + slots] for s in range(0, c.size, slots)]
 
 
 def place_events_in_sched(c: str, event_name: str, sched: pd.DataFrame):
     """ place events into the Dataframe, multiple events can happen in
     a timeslot, so events are separated by newlines """
     for i, x in enumerate(c):
-        if x == '1':
+        if x == 1:
             if sched['Games'][i] == '':
                 sched['Games'][i] = event_name
             else:
@@ -53,7 +53,7 @@ def bits_to_sched(c, sf_data, game_data):
     # the inner list is a list of bitstrings corresponding to scheds
     # for one day
     sched_per_game = {g: np.array([split_sched(x, slots_per_day)
-                                   for x in sched_per_game[g,:]])
+                                   for x in sched_per_game[g]])
                       for g in sched_per_game}
 
     # suppose we want to get the schedules only for one day,

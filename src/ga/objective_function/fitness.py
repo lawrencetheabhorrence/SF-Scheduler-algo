@@ -7,10 +7,10 @@ import ga.objective_function.fitness_helper as fh
 
 def fitness(c,
             game_data, sf_data,
-            hardReward=100, softPenalty=-30):
+            hardReward=200, softPenalty=-30):
     """ fitness value """
     cats, priority, rounds, slots_per_round = game_data.values()
-    slots, days = sf_data['slots'], sf_data['days']
+    slots, days = sf_data['slots'] * sf_data['days'], sf_data['days']
     scores = {'hc3': hc3(c, slots_per_round, cats, slots),
               'hc4': hc4(c, cats, priority, slots),
               'hc5': hc5(c, cats, rounds, slots),

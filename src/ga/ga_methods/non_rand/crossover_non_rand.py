@@ -18,7 +18,6 @@ def n_point(c1, c2, ks=None):
         return one_point(c1, c2, k=r.randrange(n))
 
     b1, b2 = np.split(c1, ks), np.split(c2, ks)
-    print(b1, b2)
 
     # this "trick" allows us to concatenate two
     # arrays while alternating the elements
@@ -34,7 +33,6 @@ def n_point(c1, c2, ks=None):
         np.ravel([b1[0::2], b2[1::2]], 'F'))
     merged_slices2 = np.hstack(
         np.ravel([b2[0::2], b1[1::2]], 'F'))
-    print(merged_slices1, merged_slices2)
 
     return np.vstack((merged_slices1, merged_slices2))
 

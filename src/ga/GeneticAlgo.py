@@ -18,7 +18,7 @@ def ch_selection(selection_method):
 def ch_mutation(mutation_method, length=None):
     return {
         'bit_flip': partial(mut.bit_flip),
-        'flip_all': partial(mut.flip_all, length),
+        'flip_all': partial(mut.flip_all),
         'uniform': partial(mut.uniform)
     }[mutation_method]
 
@@ -111,10 +111,11 @@ class GeneticAlgo:
             pd.Series(data=avg_fs, dtype=float,
                       name="Average Fitness")\
                 .to_csv(self.fitness_src, index=True)
-            return max(self.population,
-                       key=(lambda x: fitness(x,
-                                              self.game_data,
-                                              self.sf_data)))
+
+        return max(self.population,
+                   key=(lambda x: fitness(x,
+                                          self.game_data,
+                                          self.sf_data)))
 
     def ga(self):
         if 0 <= self.threshold <= 1:
