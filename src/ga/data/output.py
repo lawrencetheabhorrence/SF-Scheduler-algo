@@ -1,15 +1,16 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from ga.data.reader import read_sf_data, read_game_data
 from ga.objective_function.fitness_helper import split_chromosome_per_game
 
 
 def split_sched(c, slots):
     """ splits bitstrings w/o prefix into sections """
-    return [c[s: s + slots] for s in range(0, c.size, slots)]
+    return np.reshape((c.size // slots), slots)
 
 
-def place_events_in_sched(c: str, event_name: str, sched: pd.DataFrame):
+def place_events_in_sched(c: str, event_name: str, sched):
     """ place events into the Dataframe, multiple events can happen in
     a timeslot, so events are separated by newlines """
     for i, x in enumerate(c):
@@ -29,7 +30,7 @@ def generate_empty_scheds(sf_data):
                           periods=sf_data['days'])
     time_ranges = (pd.date_range(d, periods=slots_per_day,
                                  freq=f"{sf_data['minutes_per_slot']}T")
-                   for d in dates)
+                   for d in range(sf_data['days']))
     data = [''] * slots_per_day
     return [pd.DataFrame(index=tr,
                          columns=['Games'],
@@ -52,8 +53,9 @@ def bits_to_sched(c, sf_data, game_data):
     # corresponds to the categories of a game
     # the inner list is a list of bitstrings corresponding to scheds
     # for one day
-    sched_per_game = {g: np.array([split_sched(x, slots_per_day)
-                                   for x in sched_per_game[g]])
+    sched_per_game = {g: [np.reshape((x.size // slots_per_day, slots_per_day),
+                          x)
+                          for x in sched_per_game[g]]
                       for g in sched_per_game}
 
     # suppose we want to get the schedules only for one day,
@@ -62,7 +64,7 @@ def bits_to_sched(c, sf_data, game_data):
     # thus this list is a list of dictionaries with the games as keys
     # and the keys are a numpy array of bitstrings
     # that correspond to schedules for a day for the categories of a game
-    scheds_per_day = [{g: sched_per_game[g][:, d] for g in sched_per_game}
+    scheds_per_day = [{g: sched_per_game[g][d,:] for g in sched_per_game}
                       for d in range(sf_data['days'])]
 
     empty_scheds = generate_empty_scheds(sf_data)
@@ -74,3 +76,26 @@ def bits_to_sched(c, sf_data, game_data):
                 place_events_in_sched(sched, event_name, empty_scheds[day])
 
     return empty_scheds
+
+
+def plot_mut_cross_graphs():
+    root = '~/GitHub/SF-Scheduler-algo/src/data/model/cross_mut'
+    crossover = ['one point', 'n point (5)', 'uniform']
+    mutation = ['bit flip', 'flip all', 'uniform']
+    fig, ax = plt.subplots(3, 3)
+    plt.title('Crossover + Mutation')
+    for i, c in enumerate(crossover):
+        for j, m in enumerate(mutation):
+            src = f'{root}/fitness_{c[0]}{m[0]}.csv'
+            df = pd.read_csv(src, sep=",")
+            df['Average Fitness'].plot(ax=ax[i,j])
+            ax[i,j].set_title(c + ' + ' + m)
+
+    #plt.savefig(f'{root}/graph.png')
+    plt.subplots_adjust(top=0.948,
+                        bottom=0.057,
+                        left=0.05,
+                        right=0.989,
+                        hspace=0.36,
+                        wspace=0.181)
+    plt.show()

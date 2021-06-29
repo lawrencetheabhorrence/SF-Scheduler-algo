@@ -7,7 +7,7 @@ import ga.objective_function.fitness_helper as fh
 
 def fitness(c,
             game_data, sf_data,
-            hardReward=200, softPenalty=-30):
+            hardReward=100, softPenalty=10):
     """ fitness value """
     cats, priority, rounds, slots_per_round = game_data.values()
     slots, days = sf_data['slots'] * sf_data['days'], sf_data['days']
@@ -26,8 +26,8 @@ def hc3(c, slots_per_round: Dict[str, int],
     """ Events of games must have consecutive n timeslots,
     where n is given by the user for a particular game"""
     return fh.check_cond_for_each_game(c, cats_per_game, slots,
-                                       slots_per_round,
-                                       fh.enough_consec_slots)
+                                         slots_per_round,
+                                         fh.enough_consec_slots)
 
 
 def hc4(c, cats_per_game: Dict[str, int],
@@ -48,14 +48,14 @@ def hc5(c, cats_per_game: Dict[str, int],
         rounds_per_game: Dict[str, int], slots: int):
     """ Games must have exactly the given number of rounds """
     return fh.check_cond_for_each_game(c, cats_per_game, slots,
-                                       rounds_per_game,
-                                       fh.enough_rounds)
+                                         rounds_per_game,
+                                         fh.enough_rounds)
 
 def sc1(c, slots: int, days: int):
     """The total number of events per day
     must be evenly distributed over the week."""
-    return fh.has_even_share(fh.aggregate_occupied(c, slots),
-                             slots // days)
+    return 1 - fh.has_even_share(fh.aggregate_occupied(c, slots),
+                                 slots // days)
 
 
 def centering_score(c):
@@ -73,5 +73,5 @@ def sc2(c, slots: int, days: int):
     ending time per day.  (or games closer to the "middle") """
     slots_per_day = slots // days
     sections = fh.split_chromosome(c, slots_per_day)
-    return np.apply_along_axis(centering_score, 1,
-                               sections).sum()/len(sections)
+    return 1 - np.apply_along_axis(centering_score, 1,
+                                   sections).sum()/len(sections)

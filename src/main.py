@@ -9,12 +9,12 @@ tiny_folder = 'ga/data/test'
 # test parameters
 ga_params = {
     'selection_method': 'rank',
-    'crossover_method': 'one_point',
-    'mutation_method': 'flip_all',
-    'threshold': 100,
+    'crossover_method': 'uniform',
+    'mutation_method': 'bit_flip',
+    'threshold': 50,
     'pop_size': 50,
     'mutation_rate': 0.1,
-    'game_src': root + big_folder + '/big_game_data.csv',
+    'game_src': root + big_folder + '/med_game_data.csv',
     'sf_src': root + big_folder + '/big_sf_data.csv',
     'fitness_src': root + big_folder + 'big_fitness.csv',
     'crossover_params': {'children': 2, 'n_breaks': 5}
@@ -37,4 +37,4 @@ def __main__():
     t_end = time.perf_counter()
     print(f"Time in seconds: {t_end-t_start:0.4f}")
 
-all_cross_mut()
+__main__()
