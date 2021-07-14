@@ -18,7 +18,7 @@ def occupieds(c):
            ))
 
 
-def enough_consec_slots(c, min_slots) -> bool:
+def enough_consec_slots(c, min_slots, rounds) -> bool:
     """for this game and category, are there enough
     consecutive occupied slots?
 
@@ -34,13 +34,16 @@ def enough_consec_slots(c, min_slots) -> bool:
     # True if it passes the condition and False otherwise
     occ = occupieds(c)
     cond = (map_len(occ) >= min_slots) & (map_len(occ) % min_slots == 0)
-    return cond.all()
+    # the second condition checks if thers are enough rounds
+    first_cond = 0 if cond.all() else 0.5
+    second_cond = 0 if len(''.join(occ)) == rounds * min_slots else 0.5
+    return first_cond * second_cond
 
 
-def enough_rounds(c: str, rounds: int) -> bool:
+def enough_rounds(c, rounds, min_slots) -> bool:
     """for this game and category, are the
     number of rounds correct?"""
-    return occupieds(c).size == rounds
+    return (''.join(occupieds(c))) == rounds * min_slots
 
 
 def if_simultaneous(c, slots, first, cats) -> bool:
@@ -112,8 +115,9 @@ def split_chromosome_per_game(c, cats_per_game, slots):
 
 def check_cond_for_each_game(c: int,
                              cats_per_game: Dict[str, int], slots,
-                             min_per_game: Dict[str, int],
-                             pred: Callable[[int, int], bool]):
+                             pred: Callable[[int, int, int], bool],
+                             min_slots: Dict[str, int],
+                             rounds_per_game: Dict[str, int]):
     """ Runs the constraint on each slice with all timeslots
     Useful for constraints where the condition is dependent
     on the game """
@@ -125,7 +129,8 @@ def check_cond_for_each_game(c: int,
     # we then flatten that list and check if it is true for
     # all slices
     slices_per_game = split_chromosome_per_game(c, cats_per_game, slots)
-    fulfilled = list(chain(*[[pred(game_slice, min_per_game[g])
+    fulfilled = list(chain(*[[pred(game_slice, min_slots[g], 
+                                   rounds_per_game[g])
                               for game_slice in slices_per_game[g]]
                              for g in slices_per_game]))
-    return 1 if np.all(fulfilled) else 0
+    return 0 if np.all(fulfilled) else 1

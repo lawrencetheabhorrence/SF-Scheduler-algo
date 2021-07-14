@@ -14,7 +14,7 @@ ga_params = {
     'threshold': 50,
     'pop_size': 50,
     'mutation_rate': 0.1,
-    'game_src': root + big_folder + '/med_game_data.csv',
+    'game_src': root + big_folder + '/big_game_data.csv',
     'sf_src': root + big_folder + '/big_sf_data.csv',
     'fitness_src': root + big_folder + 'big_fitness.csv',
     'crossover_params': {'children': 2, 'n_breaks': 5}
