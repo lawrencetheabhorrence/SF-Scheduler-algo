@@ -21,7 +21,8 @@ def generate_chromosome(slots):
 
 def init_pop(pop_size, game_data, sf_data):
     slots = sf_data['slots']
+    days = sf_data['days']
     games = len(game_data['cats'])
     cats = sum(game_data['cats'].values())
-    return [generate_chromosome(slots * games * cats)
+    return [generate_chromosome(slots * games * cats * days)
             for _ in range(pop_size)]

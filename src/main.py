@@ -2,7 +2,7 @@ import time
 from ga.GeneticAlgo import GeneticAlgo
 from ga.data.reader import read_game_data, read_sf_data
 
-root = '~/GitHub/SF-Scheduler-algo/src/'
+root = '~/jul_home/GitHub/SF-Scheduler-algo/src/'
 big_folder = 'data/model'
 tiny_folder = 'ga/data/test'
 

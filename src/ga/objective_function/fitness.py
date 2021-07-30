@@ -14,10 +14,11 @@ def fitness(c,
     slots, days = sf_data['slots'] * sf_data['days'], sf_data['days']
     scores = {'hc3': hc3(c, slots_per_round, rounds, cats, slots),
               'hc4': hc4(c, cats, priority, slots),
+              'hc5': hc5(c, rounds, slots_per_round, cats, slots),
               'sc1': sc1(c, slots, days),
               'sc2': sc2(c, slots, days)}
     print(scores, c.size)
-    return (hardReward * (scores['hc3'] + scores['hc4'])
+    return (hardReward * (scores['hc3'] + scores['hc4'] + scores['hc5'])
             + softPenalty * (scores['sc1'] + scores['sc2']))
 
 
@@ -29,13 +30,12 @@ def hc3(c, slots_per_round: Dict[str, int],
     slices_per_game = fh.split_chromosome_per_game(c, cats_per_game, slots)
     fulfilled = list(chain(*[[fh.enough_consec_slots(
                                    game_slice,
-                                   slots_per_round[g], 
-                                   rounds_per_game[g])
+                                   slots_per_round[g])
                               for game_slice in slices_per_game[g]]
                              for g in slices_per_game]))
     print(fulfilled)
     return sum(fulfilled)/len(fulfilled)
-    
+
 
 def hc4(c, cats_per_game: Dict[str, int],
         priority_per_game: Dict[str, int], slots):
@@ -51,8 +51,20 @@ def hc4(c, cats_per_game: Dict[str, int],
                 if np.bitwise_and(game_slices[g][cat],
                                   game_slices[o][cat]).sum() > 0:
                     return 1
-    
+
     return 0
+
+def hc5(c, rounds_per_game, slots_per_round, cats_per_game, slots):
+    """ Games must have enough rounds """
+    slices_per_game = fh.split_chromosome_per_game(c, cats_per_game, slots)
+    fulfilled = list(chain(*[[fh.enough_rounds(
+        game_slice,
+        rounds_per_game[g],
+        slots_per_round[g])
+        for game_slice in slices_per_game[g]]
+        for g in slices_per_game]))
+    print(fulfilled)
+    return sum(fulfilled)/len(fulfilled)
 
 
 def sc1(c, slots: int, days: int):

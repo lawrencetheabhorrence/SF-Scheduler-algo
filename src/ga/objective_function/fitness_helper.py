@@ -8,7 +8,7 @@ from typing import Dict, List, Callable
 def occupieds(c):
     """get all sequences of occupied slots
     in a chromosome """
-    bitstr = ''.join(map(str,c))
+    bitstr = ''.join(map(str, c))
     # We retain this as a list of strings as
     # there is no place where we will need to
     # interact with the individual bits
@@ -18,7 +18,7 @@ def occupieds(c):
            ))
 
 
-def enough_consec_slots(c, min_slots, rounds) -> bool:
+def enough_consec_slots(c, min_slots):
     """for this game and category, are there enough
     consecutive occupied slots?
 
@@ -35,15 +35,14 @@ def enough_consec_slots(c, min_slots, rounds) -> bool:
     occ = occupieds(c)
     cond = (map_len(occ) >= min_slots) & (map_len(occ) % min_slots == 0)
     # the second condition checks if thers are enough rounds
-    first_cond = 0 if cond.all() else 0.5
-    second_cond = 0 if len(''.join(occ)) == rounds * min_slots else 0.5
-    return first_cond * second_cond
+    first_cond = occ[cond].size / occ.size
+    return first_cond
 
 
 def enough_rounds(c, rounds, min_slots) -> bool:
     """for this game and category, are the
     number of rounds correct?"""
-    return (''.join(occupieds(c))) == rounds * min_slots
+    return 0 if (''.join(occupieds(c))) == rounds * min_slots else 1
 
 
 def if_simultaneous(c, slots, first, cats) -> bool:
@@ -108,7 +107,7 @@ def split_chromosome_per_game(c, cats_per_game, slots):
     game_slices = {}
     for g in cats_per_game:
 
-        game_slices[g] = np.array(sections[end:end+cats_per_game[g],:])
+        game_slices[g] = np.array(sections[end:end+cats_per_game[g], :])
         end += cats_per_game[g]
     return game_slices
 
@@ -129,7 +128,7 @@ def check_cond_for_each_game(c: int,
     # we then flatten that list and check if it is true for
     # all slices
     slices_per_game = split_chromosome_per_game(c, cats_per_game, slots)
-    fulfilled = list(chain(*[[pred(game_slice, min_slots[g], 
+    fulfilled = list(chain(*[[pred(game_slice, min_slots[g],
                                    rounds_per_game[g])
                               for game_slice in slices_per_game[g]]
                              for g in slices_per_game]))
