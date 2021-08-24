@@ -8,7 +8,7 @@ import ga.objective_function.fitness_helper as fh
 
 def fitness(c,
             game_data, sf_data,
-            hardReward=-100, softPenalty=-10):
+            hardReward=-500, softPenalty=-10):
     """ fitness value """
     cats, priority, rounds, slots_per_round = game_data.values()
     slots, days = sf_data['slots'] * sf_data['days'], sf_data['days']
@@ -17,7 +17,7 @@ def fitness(c,
               'hc5': hc5(c, rounds, slots_per_round, cats, slots),
               'sc1': sc1(c, slots, days),
               'sc2': sc2(c, slots, days)}
-    print(scores, c.size)
+    #print(scores, c.size)
     return (hardReward * (scores['hc3'] + scores['hc4'] + scores['hc5'])
             + softPenalty * (scores['sc1'] + scores['sc2']))
 
@@ -33,7 +33,7 @@ def hc3(c, slots_per_round: Dict[str, int],
                                    slots_per_round[g])
                               for game_slice in slices_per_game[g]]
                              for g in slices_per_game]))
-    print(fulfilled)
+    #print(fulfilled)
     return sum(fulfilled)/len(fulfilled)
 
 
@@ -63,7 +63,7 @@ def hc5(c, rounds_per_game, slots_per_round, cats_per_game, slots):
         slots_per_round[g])
         for game_slice in slices_per_game[g]]
         for g in slices_per_game]))
-    print(fulfilled)
+    #print(fulfilled)
     return sum(fulfilled)/len(fulfilled)
 
 

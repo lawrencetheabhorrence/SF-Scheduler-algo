@@ -105,9 +105,11 @@ class GeneticAlgo:
     def genetic_algo_fixed_generation(self):
         self.init_pop()
         avg_fs = [self.avg_fitness()]
-        for _ in range(self.threshold):
+        for i in range(self.threshold):
             self.genetic_algo_cycle()
-            avg_fs.append(self.avg_fitness())
+            avgf = self.avg_fitness()
+            print(f"Generation {i}/{self.threshold}, Avg Fitness: {avgf}")
+            avg_fs.append(avgf)
             pd.Series(data=avg_fs, dtype=float,
                       name="Average Fitness")\
                 .to_csv(self.fitness_src, index=True)

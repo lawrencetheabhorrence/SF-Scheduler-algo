@@ -8,18 +8,18 @@ from ga.objective_function.fitness_helper import split_chromosome_per_game
 def place_events_in_sched(c: str, event_name: str, sched):
     """ place events into the Dataframe, multiple events can happen in
     a timeslot, so events are separated by newlines """
-    for i, x in enumerate(c):
-        if x == 1:
-            if sched['Games'][i] == '':
-                sched['Games'][i] = event_name
+    for i in range(c.size):
+        if c[i] == 1:
+            if sched.iloc[i,0] == '':
+                sched.iloc[i,0] = event_name
             else:
-                sched['Games'][i] = sched['Games'][i] + '\n' + event_name
+                sched.iloc[i,0] = sched.iloc[i,0] + '\n' + event_name
 
 
 def generate_empty_scheds(sf_data):
     """ generates a list of dataframes (one per day),
     with no events but with time indexes corresponding to time slots """
-    slots_per_day = sf_data['slots'] // sf_data['days']
+    slots_per_day = sf_data['slots']
     dates = pd.date_range(sf_data['start_date'] + ' ' +
                           sf_data['start_time'],
                           periods=sf_data['days'])

@@ -39,10 +39,10 @@ def enough_consec_slots(c, min_slots):
     return first_cond
 
 
-def enough_rounds(c, rounds, min_slots) -> bool:
+def enough_rounds(c, rounds, min_slots) -> int:
     """for this game and category, are the
     number of rounds correct?"""
-    return 0 if (''.join(occupieds(c))) == rounds * min_slots else 1
+    return abs(1 - len(''.join(occupieds(c))) / (rounds * min_slots))
 
 
 def if_simultaneous(c, slots, first, cats) -> bool:

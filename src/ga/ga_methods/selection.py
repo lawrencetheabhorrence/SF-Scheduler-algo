@@ -8,8 +8,8 @@ def rank(pop,
          sf_data: Tuple[int, int]):
     """ choose parent by ranking fitness """
     pop.sort(key=(lambda x: fitness(x, game_data, sf_data)),
-             reverse=False)
+             reverse=True)
     return r.choices(pop,
-                     weights=[i/sum(range(1, len(pop)+1))
+                     weights=[i
                               for i in range(len(pop), 0, -1)],
                      k=1)[0]
