@@ -12,7 +12,7 @@ ga_params = {
     'selection_method': 'rank',
     'crossover_method': 'uniform',
     'mutation_method': 'bit_flip',
-    'threshold': 1000,
+    'threshold': 635,
     'pop_size': 50,
     'mutation_rate': 0.1,
     'game_src': root + big_folder + '/big_game_data.csv',
