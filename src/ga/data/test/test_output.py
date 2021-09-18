@@ -1,3 +1,4 @@
+import numpy as np
 import ga.data.output as o
 import ga.data.reader as rea
 
@@ -6,7 +7,7 @@ root = '~/GitHub/SF-Scheduler-algo/src/ga/data/test/'
 
 
 def test_bits_to_sched():
-    c = 0b1111010001010110
+    c = np.array([1,1,1,0,1,0,0,0,1,0,1,0,1,1,0])
     sf_data = rea.read_sf_data(root + 'test_sf_data.csv')
     game_data = rea.read_game_data(root + 'test_game_data.csv')
     result = o.bits_to_sched(c, sf_data, game_data)[0]['Games']

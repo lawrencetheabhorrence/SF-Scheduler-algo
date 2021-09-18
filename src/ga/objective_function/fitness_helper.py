@@ -5,10 +5,10 @@ from functools import reduce
 from typing import Dict, List, Callable
 
 
-def occupieds(c) -> List[str]:
+def occupieds(c):
     """get all sequences of occupied slots
     in a chromosome """
-    bitstr = ''.join(map(str,c))
+    bitstr = ''.join(map(str, c))
     # We retain this as a list of strings as
     # there is no place where we will need to
     # interact with the individual bits
@@ -18,7 +18,7 @@ def occupieds(c) -> List[str]:
            ))
 
 
-def enough_consec_slots(c, min_slots) -> bool:
+def enough_consec_slots(c, min_slots):
     """for this game and category, are there enough
     consecutive occupied slots?
 
@@ -34,13 +34,16 @@ def enough_consec_slots(c, min_slots) -> bool:
     # True if it passes the condition and False otherwise
     occ = occupieds(c)
     cond = (map_len(occ) >= min_slots) & (map_len(occ) % min_slots == 0)
-    return cond.all()
+    # the second condition checks if thers are enough rounds
+    first_cond = occ[cond].size / occ.size
+    return first_cond
 
 
-def enough_rounds(c: str, rounds: int) -> bool:
+def enough_rounds(c, rounds, min_slots) -> int:
     """for this game and category, are the
     number of rounds correct?"""
-    return occupieds(c).size == rounds
+    total_timeslots = len(''.join(occupieds(c)))
+    return abs((total_timeslots - rounds * min_slots)/max(rounds * min_slots, c.size - (rounds*min_slots)))
 
 
 def if_simultaneous(c, slots, first, cats) -> bool:
@@ -84,8 +87,9 @@ def has_even_share(c, section_len):
     n_occupied_slots = c.sum()
     optimal_occupieds_per_section = n_occupied_slots / section_len
     n_occupied_per_section = split_chromosome(c, section_len).sum(axis=1)
-    map_dist = np.vectorize(lambda x: abs(x - optimal_occupieds_per_section))
-    return map_dist(n_occupied_per_section).sum() / n_occupied_per_section.size
+    map_dist = np.vectorize(lambda x: abs(x -
+                                       optimal_occupieds_per_section)/section_len)
+    return abs(map_dist(n_occupied_per_section).sum()) / n_occupied_per_section.size
 
 
 def split_chromosome_per_game(c, cats_per_game, slots):
@@ -104,15 +108,16 @@ def split_chromosome_per_game(c, cats_per_game, slots):
     game_slices = {}
     for g in cats_per_game:
 
-        game_slices[g] = np.array(sections[end:end+cats_per_game[g],:])
+        game_slices[g] = np.array(sections[end:end+cats_per_game[g], :])
         end += cats_per_game[g]
     return game_slices
 
 
 def check_cond_for_each_game(c: int,
                              cats_per_game: Dict[str, int], slots,
-                             min_per_game: Dict[str, int],
-                             pred: Callable[[int, int], bool]):
+                             pred: Callable[[int, int, int], bool],
+                             min_slots: Dict[str, int],
+                             rounds_per_game: Dict[str, int]):
     """ Runs the constraint on each slice with all timeslots
     Useful for constraints where the condition is dependent
     on the game """
@@ -124,7 +129,8 @@ def check_cond_for_each_game(c: int,
     # we then flatten that list and check if it is true for
     # all slices
     slices_per_game = split_chromosome_per_game(c, cats_per_game, slots)
-    fulfilled = list(chain(*[[pred(game_slice, min_per_game[g])
+    fulfilled = list(chain(*[[pred(game_slice, min_slots[g],
+                                   rounds_per_game[g])
                               for game_slice in slices_per_game[g]]
                              for g in slices_per_game]))
-    return 1 if np.all(fulfilled) else 0
+    return 0 if np.all(fulfilled) else 1

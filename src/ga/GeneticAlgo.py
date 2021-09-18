@@ -18,7 +18,7 @@ def ch_selection(selection_method):
 def ch_mutation(mutation_method, length=None):
     return {
         'bit_flip': partial(mut.bit_flip),
-        'flip_all': partial(mut.flip_all, length),
+        'flip_all': partial(mut.flip_all),
         'uniform': partial(mut.uniform)
     }[mutation_method]
 
@@ -105,16 +105,19 @@ class GeneticAlgo:
     def genetic_algo_fixed_generation(self):
         self.init_pop()
         avg_fs = [self.avg_fitness()]
-        for _ in range(self.threshold):
+        for i in range(self.threshold):
             self.genetic_algo_cycle()
-            avg_fs.append(self.avg_fitness())
+            avgf = self.avg_fitness()
+            print(f"Generation {i}/{self.threshold}, Avg Fitness: {avgf}")
+            avg_fs.append(avgf)
             pd.Series(data=avg_fs, dtype=float,
                       name="Average Fitness")\
                 .to_csv(self.fitness_src, index=True)
-            return max(self.population,
-                       key=(lambda x: fitness(x,
-                                              self.game_data,
-                                              self.sf_data)))
+
+        return max(self.population,
+                   key=(lambda x: fitness(x,
+                                          self.game_data,
+                                          self.sf_data)))
 
     def ga(self):
         if 0 <= self.threshold <= 1:

@@ -15,12 +15,14 @@ from ..data.reader import read_game_data, read_sf_data
 
 
 def generate_chromosome(slots):
-    return np.random.randint(low=0, high=2, size=slots)
+    rng = np.random.default_rng()
+    return rng.integers(2, size=slots)
 
 
 def init_pop(pop_size, game_data, sf_data):
     slots = sf_data['slots']
-    games = len(game_data['cats'])
+    days = sf_data['days']
+    # games = len(game_data['cats'])
     cats = sum(game_data['cats'].values())
-    return [generate_chromosome(slots * games * cats)
+    return [generate_chromosome(slots * cats * days)
             for _ in range(pop_size)]
