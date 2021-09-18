@@ -87,7 +87,7 @@ def has_even_share(c, section_len):
     n_occupied_slots = c.sum()
     optimal_occupieds_per_section = n_occupied_slots / section_len
     n_occupied_per_section = split_chromosome(c, section_len).sum(axis=1)
-    map_dist = np.vectorize(lambda x: (x -
+    map_dist = np.vectorize(lambda x: abs(x -
                                        optimal_occupieds_per_section)/section_len)
     return abs(map_dist(n_occupied_per_section).sum()) / n_occupied_per_section.size
 
