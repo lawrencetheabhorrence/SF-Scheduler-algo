@@ -17,7 +17,7 @@ def fitness(c,
               'hc5': hc5(c, rounds, slots_per_round, cats, slots),
               'sc1': sc1(c, slots, days),
               'sc2': sc2(c, slots, days)}
-    print(scores, c.size)
+    # print(scores, c.size)
     return (hardReward * (scores['hc3'] + scores['hc4'] + scores['hc5'])
             + softPenalty * (scores['sc1'] + scores['sc2']))
 
