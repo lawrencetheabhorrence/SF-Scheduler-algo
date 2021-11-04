@@ -1,11 +1,12 @@
 import time
+import os
 from ga.GeneticAlgo import GeneticAlgo
 from ga.data.reader import read_game_data, read_sf_data
 from ga.data.output import bits_to_sched
 
-root = '~/GitHub/SF-Scheduler-algo/src/'
-big_folder = 'data/model'
-tiny_folder = 'ga/data/test'
+root = os.path.dirname(os.path.abspath(__file__))
+big_folder = '/data/model'
+tiny_folder = '/ga/data/test'
 
 # test parameters
 ga_params = {
