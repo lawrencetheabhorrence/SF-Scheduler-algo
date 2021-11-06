@@ -5,8 +5,8 @@ from ga.data.reader import read_game_data, read_sf_data
 from ga.data.output import bits_to_sched
 
 root = os.path.dirname(os.path.abspath(__file__))
-big_folder = '/data/model'
-tiny_folder = '/ga/data/test'
+big_folder = '/data/model/'
+tiny_folder = '/ga/data/test/'
 
 # test parameters
 ga_params = {
@@ -16,8 +16,8 @@ ga_params = {
     'threshold': 635,
     'pop_size': 50,
     'mutation_rate': 0.1,
-    'game_src': root + big_folder + '/big_game_data.csv',
-    'sf_src': root + big_folder + '/big_sf_data.csv',
+    'game_src': root + big_folder + 'big_game_data.csv',
+    'sf_src': root + big_folder + 'big_sf_data.csv',
     'fitness_src': root + big_folder + 'big_fitness.csv',
     'crossover_params': {'children': 2, 'n_breaks': 5}
 }
