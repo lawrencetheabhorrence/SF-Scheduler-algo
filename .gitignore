@@ -5,3 +5,5 @@ __pycache__
 init.sh
 .idea
 secret_settings.py
+big_game_data.csv
+big_sf_data.csv
