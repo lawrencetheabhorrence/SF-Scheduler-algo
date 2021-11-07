@@ -21,7 +21,6 @@ global days
 global receiver
 receiver = sys.argv[1]
 
-
 # send email
 def send_email():
     global days
@@ -66,8 +65,8 @@ ga_params = {
     'selection_method': 'rank',
     'crossover_method': 'uniform',
     'mutation_method': 'bit_flip',
-    'threshold': 635,
-    'pop_size': 50,
+    'threshold': 50,
+    'pop_size': 635,
     'mutation_rate': 0.1,
     'game_src': root + big_folder + '/big_game_data.csv',
     'sf_src': root + big_folder + '/big_sf_data.csv',

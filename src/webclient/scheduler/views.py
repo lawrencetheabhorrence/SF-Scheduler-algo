@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import json
 import os
+import subprocess
 
 django_path = os.path.dirname(os.path.abspath(__file__))
 root = django_path.replace("webclient/scheduler", "")
@@ -13,7 +14,7 @@ model = "model/"
 def sf_csv(js):
     parsed = json.loads(js)
     sf_header = "slots,days,minutes_per_slot,start_time,start_date"
-    sf_data = f"{parsed['n_timeslots_day']},{parsed['days']},8:00,{parsed['start_date']}"
+    sf_data = f"{parsed['n_timeslots_day']},{parsed['days']},{parsed['timeslot_length']},8:00,{parsed['start_date']}"
     return sf_header + "\n" + sf_data
 
 def game_csv(js):
@@ -39,4 +40,6 @@ def index(request):
         game_csv_file = open(root + data_path + model + "big_game_data.csv", "w")
         game_csv_file.write(game_csv_str)
         game_csv_file.close()
+        email = json.loads(request.body)['email']
+        subprocess.Popen(['python', root + '/main.py', email])
         return HttpResponse(sf_csv_str)

@@ -35,6 +35,7 @@ def enough_consec_slots(c, min_slots):
     occ = occupieds(c)
     cond = (map_len(occ) >= min_slots) & (map_len(occ) % min_slots == 0)
     # the second condition checks if thers are enough rounds
+    if occ.size == 0: return 0
     first_cond = occ[cond].size / occ.size
     return first_cond
 

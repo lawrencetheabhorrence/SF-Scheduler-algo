@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 django-cors-headers = "*"
+pandas = "*"
+numpy = "*"
+matplotlib = "*"
 
 [dev-packages]
 
