@@ -34,13 +34,12 @@ def send_email():
     msg['to'] = receiver
 
     # main body is an attachment
-    # python triple quotes allow strings to span multiple lines and keep special characters
-    body = email.mime.text.MIMEText('''Greetings, 
-    attached are your generated schedules! We hope they are to your satisfaction.
-    
-    Sincerely, 
-    The SF Scheduler Algorithm Team
-    ''')
+    body = email.mime.text.MIMEText('Greetings, \n'
+                                    '    \n'
+                                    'Attached are your generated schedules! We hope they are to your satisfaction.\n'
+                                    '    \n'
+                                    'Sincerely, \n'
+                                    'The Automated SF Scheduler Team\n')
     msg.attach(body)
 
     # HTML attachment/s
