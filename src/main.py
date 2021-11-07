@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 from ga.GeneticAlgo import GeneticAlgo
 from ga.data.reader import read_game_data, read_sf_data
 from ga.data.output import bits_to_sched
@@ -18,7 +19,7 @@ tiny_folder = '/ga/data/test'
 
 global days
 global receiver
-receiver = 'mrthrowaway1028@gmail.com'
+receiver = sys.argv[1]
 
 
 # send email
