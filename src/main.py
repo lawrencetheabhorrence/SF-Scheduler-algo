@@ -101,7 +101,7 @@ def __main__():
         day.to_html(root + big_folder + 'result' + str(i) + '.html')
         day.to_csv(root + big_folder + 'result' + str(i) + '.csv')
         global days
-        days = i
+        days = i + 1
     print(df)
     print(days)
 
