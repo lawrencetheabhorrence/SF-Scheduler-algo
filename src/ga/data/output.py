@@ -13,7 +13,7 @@ def place_events_in_sched(c: str, event_name: str, sched):
             if sched.iloc[i,0] == '':
                 sched.iloc[i,0] = event_name
             else:
-                sched.iloc[i,0] = sched.iloc[i,0] + '\n' + event_name
+                sched.iloc[i,0] = sched.iloc[i,0] + '<br>' + event_name
 
 
 def generate_empty_scheds(sf_data):
