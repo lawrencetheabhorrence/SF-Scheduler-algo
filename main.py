@@ -4,7 +4,6 @@ import sys
 from ga.GeneticAlgo import GeneticAlgo
 from ga.data.reader import read_game_data, read_sf_data
 from ga.data.output import bits_to_sched
-from webclient.webclient.secret_settings import *
 
 # sending emails with attachments using SMTP requires building emails in mime format
 import smtplib
@@ -20,6 +19,8 @@ tiny_folder = '/ga/data/test'
 global days
 global receiver
 receiver = sys.argv[1]
+sf_email = os.getenv('SF_EMAIL')
+sf_pass = os.getenv('SF_PASS')
 
 # send email
 def send_email():

@@ -6,7 +6,7 @@ import os
 import subprocess
 
 django_path = os.path.dirname(os.path.abspath(__file__))
-root = django_path.replace("webclient/scheduler", "")
+root = django_path.replace("/scheduler", "") + "/"
 data_path = "data/"
 model = "model/"
 
@@ -41,5 +41,5 @@ def index(request):
         game_csv_file.write(game_csv_str)
         game_csv_file.close()
         email = json.loads(request.body)['email']
-        subprocess.Popen(['python', root + '/main.py', email])
+        subprocess.Popen(['python', root + 'main.py', email])
         return HttpResponse(sf_csv_str)
