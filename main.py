@@ -24,6 +24,7 @@ sf_pass = os.getenv('SF_PASS')
 
 # send email
 def send_email():
+    """Shoot client with mailgun!"""
     global days
     attachmentpath = root + '/data/'
 
@@ -52,7 +53,7 @@ def send_email():
         msg.attach(att)
 
     try:
-        s = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        s = smtplib.SMTP('smtp.mailgun.org', 587)
         s.login(sf_email, sf_pass)
         s.sendmail(sf_email, receiver, msg.as_string())
         s.quit()
