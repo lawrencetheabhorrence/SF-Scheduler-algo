@@ -101,7 +101,7 @@ def __main__():
     game_data = read_game_data(ga_params['game_src'])
     df = bits_to_sched(best, sf_data, game_data)
     for i, day in enumerate(df):
-        day.to_html(root + big_folder + "_" +  client_info[0] +'_result' + str(i) + '.html', escape=False)
+        day.to_html(root + big_folder + "_" + client_info[0] +'_result' + str(i) + '.html', escape=False)
         day.to_csv(root + big_folder + "_" + client_info[0] + '_result' + str(i) + '.csv')
         global days
         days = i + 1
