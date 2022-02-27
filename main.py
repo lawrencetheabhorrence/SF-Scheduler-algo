@@ -72,9 +72,9 @@ ga_params = {
     'threshold': 10,
     'pop_size': 10,
     'mutation_rate': 0.1,
-    'game_src': root + big_folder + '/' + client_info[0] + '_big_game_data.csv',
-    'sf_src': root + big_folder + '/' + client_info[0] + '_big_sf_data.csv',
-    'fitness_src': root + big_folder + '/' + client_info[0] + '_big_fitness.csv',
+    'game_src': root + big_folder + '/' + client_info[0] + '_game_data.csv',
+    'sf_src': root + big_folder + '/' + client_info[0] + '_sf_data.csv',
+    'fitness_src': root + big_folder + '/' + client_info[0] + '_fitness.csv',
     'crossover_params': {'children': 2, 'n_breaks': 5}
 }
 
