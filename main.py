@@ -12,21 +12,23 @@ import email.mime.application
 import email.mime.text
 import email.mime.multipart
 
-root = os.path.dirname(os.path.abspath(__file__))
-big_folder = '/data/model'
-tiny_folder = '/ga/data/test'
-
 global days
 global receiver
 receiver = sys.argv[1]
+client_info = receiver.split('@')  # 0 = identifier, 1 = domain
 sf_email = os.getenv('SF_EMAIL')
 sf_pass = os.getenv('SF_PASS')
+
+root = os.path.dirname(os.path.abspath(__file__))
+big_folder = '/data/client_data/' + client_info[0] + '/model'
+tiny_folder = '/ga/data/test'
+
 
 # send email
 def send_email():
     """Shoot client with mailgun!"""
     global days
-    attachmentpath = root + '/data/'
+    attachmentpath = root + '/data/client_data/' + client_info[0]
 
     # MIME format message
     msg = email.mime.multipart.MIMEMultipart()
@@ -45,7 +47,7 @@ def send_email():
 
     # HTML attachment/s
     for i in range(0, days):
-        filename = 'modelresult' + str(i) + '.html'
+        filename = '/model_' + client_info[0] + '_result' + str(i) + '.html'
         fp = open(attachmentpath + filename, 'rb')
         att = email.mime.application.MIMEApplication(fp.read(), _subtype="html")
         fp.close()
@@ -53,7 +55,7 @@ def send_email():
         msg.attach(att)
 
     try:
-        s = smtplib.SMTP('smtp.gmail.com', 485)
+        s = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         s.login(sf_email, sf_pass)
         s.sendmail(sf_email, receiver, msg.as_string())
         s.quit()
@@ -70,9 +72,9 @@ ga_params = {
     'threshold': 10,
     'pop_size': 10,
     'mutation_rate': 0.1,
-    'game_src': root + big_folder + '/big_game_data.csv',
-    'sf_src': root + big_folder + '/big_sf_data.csv',
-    'fitness_src': root + big_folder + '/big_fitness.csv',
+    'game_src': root + big_folder + '/' + client_info[0] + '_big_game_data.csv',
+    'sf_src': root + big_folder + '/' + client_info[0] + '_big_sf_data.csv',
+    'fitness_src': root + big_folder + '/' + client_info[0] + '_big_fitness.csv',
     'crossover_params': {'children': 2, 'n_breaks': 5}
 }
 
@@ -83,7 +85,7 @@ def all_cross_mut():
         for j in ['bit_flip', 'flip_all', 'uniform']:
             ga_params['mutation_method'] = j
             ga_params['fitness_src'] = (root + big_folder +
-            '/cross_mut/fitness_' + i[0] + j[0] + '.csv')
+            '/' + client_info[0] + '_cross_mut/fitness_' + i[0] + j[0] + '.csv')
             __main__()
 
 
@@ -99,8 +101,8 @@ def __main__():
     game_data = read_game_data(ga_params['game_src'])
     df = bits_to_sched(best, sf_data, game_data)
     for i, day in enumerate(df):
-        day.to_html(root + big_folder + 'result' + str(i) + '.html', escape=False)
-        day.to_csv(root + big_folder + 'result' + str(i) + '.csv')
+        day.to_html(root + big_folder + "_" +  client_info[0] +'_result' + str(i) + '.html', escape=False)
+        day.to_csv(root + big_folder + "_" + client_info[0] + '_result' + str(i) + '.csv')
         global days
         days = i + 1
     print(df)
