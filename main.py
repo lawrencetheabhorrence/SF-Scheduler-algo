@@ -53,7 +53,7 @@ def send_email():
         msg.attach(att)
 
     try:
-        s = smtplib.SMTP('smtp.mailgun.org', 587)
+        s = smtplib.SMTP('smtp.gmail.com', 485)
         s.login(sf_email, sf_pass)
         s.sendmail(sf_email, receiver, msg.as_string())
         s.quit()
