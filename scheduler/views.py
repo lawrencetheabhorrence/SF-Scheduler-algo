@@ -25,21 +25,33 @@ def game_csv(js):
         game_data += f"{g['name']},{g['n_categories']},{g['priority']},{g['n_timeslots_round']},3\n"
     return game_header + "\n" + game_data
 
+def write_file(path, data):
+    f = open(path, 'w')
+    f.write(data)
+    f.close()
+
 @csrf_exempt
 def index(request):
     if request.method == 'POST':
         sf_csv_str = sf_csv(request.body)
         game_csv_str = game_csv(request.body)
+        email = json.loads(request.body)['email']
+
+        file_prefix = email.split('@')[0]
+
+        path_prefix = root + data_path + model
+        sf_path = path_prefix + f"{file_prefix}_sf_data.csv"
+        game_path = path_prefix + f"{file_prefix}_game_data.csv"
+
+        # debug info
         print(sf_csv_str)
         print(game_csv_str)
-        print(root + data_path + model + "big_game_data.csv")
-        print(root + data_path + model + "big_sf_data.csv")
-        sf_csv_file = open(root + data_path + model + "big_sf_data.csv", "w")
-        sf_csv_file.write(sf_csv_str)
-        sf_csv_file.close()
-        game_csv_file = open(root + data_path + model + "big_game_data.csv", "w")
-        game_csv_file.write(game_csv_str)
-        game_csv_file.close()
-        email = json.loads(request.body)['email']
-        subprocess.Popen(['python', root + 'main.py', email])
+        print(sf_path)
+        print(game_path)
+
+        # write files to folder
+        write_file(sf_path, sf_csv_str)
+        write_file(game_path, game_csv_str)
+
+        subprocess.Popen(['python', root + 'main.py', email, sf_path, game_path])
         return HttpResponse(sf_csv_str)

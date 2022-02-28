@@ -18,7 +18,7 @@ tiny_folder = '/ga/data/test'
 
 global days
 global receiver
-receiver = sys.argv[1]
+receiver, sf_path, game_path = sys.argv[1], sys.argv[2], sys.argv[3]
 sf_email = os.getenv('SF_EMAIL')
 sf_pass = os.getenv('SF_PASS')
 
@@ -67,11 +67,11 @@ ga_params = {
     'selection_method': 'rank',
     'crossover_method': 'uniform',
     'mutation_method': 'bit_flip',
-    'threshold': 10,
-    'pop_size': 10,
+    'threshold': 650,
+    'pop_size': 50,
     'mutation_rate': 0.1,
-    'game_src': root + big_folder + '/big_game_data.csv',
-    'sf_src': root + big_folder + '/big_sf_data.csv',
+    'game_src': game_path,
+    'sf_src': sf_path,
     'fitness_src': root + big_folder + '/big_fitness.csv',
     'crossover_params': {'children': 2, 'n_breaks': 5}
 }
@@ -85,7 +85,6 @@ def all_cross_mut():
             ga_params['fitness_src'] = (root + big_folder +
             '/cross_mut/fitness_' + i[0] + j[0] + '.csv')
             __main__()
-
 
 def __main__():
     ga_obj = GeneticAlgo(**ga_params)
@@ -108,5 +107,5 @@ def __main__():
 
 
 __main__()
-send_email()
+#send_email()
 
