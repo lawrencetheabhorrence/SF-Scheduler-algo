@@ -107,5 +107,5 @@ def __main__():
 
 
 __main__()
-#send_email()
+send_email()
 
