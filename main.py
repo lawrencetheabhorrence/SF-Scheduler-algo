@@ -94,7 +94,6 @@ def __main__():
     print(best)
     t_end = time.perf_counter()
     print(f"Time in seconds: {t_end-t_start:0.4f}")
-    sf_data = read_sf_data(ga_params['sf_src'])
     game_data = read_game_data(ga_params['game_src'])
     df = bits_to_sched(best, sf_data, game_data)
     for i, day in enumerate(df):
