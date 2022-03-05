@@ -1,7 +1,8 @@
 import time
 import os
 import sys
-import datetime.datetime as dt
+import datetime as dt
+from datetime import datetime
 from ga.GeneticAlgo import GeneticAlgo
 from ga.data.reader import read_game_data, read_sf_data
 from ga.data.output import bits_to_sched
