@@ -1,7 +1,8 @@
 from ga.GeneticAlgo import GeneticAlgo
+import numpy as np
 
 
-root = '~/GitHub/SF-Scheduler-algo/src/ga'
+root = '~/GitHub/SF-Scheduler-algo/ga'
 
 
 # test parameters
@@ -30,4 +31,4 @@ def test_ga_cycle():
 
 def test_ga():
     ga_obj.init_pop()
-    assert isinstance(ga_obj.ga(), int)
+    assert np.issubdtype(ga_obj.ga().dtype, np.integer)

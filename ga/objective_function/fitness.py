@@ -12,18 +12,18 @@ def fitness(c,
     """ fitness value """
     cats, priority, rounds, slots_per_round = game_data.values()
     slots, days = sf_data['slots'] * sf_data['days'], sf_data['days']
-    scores = {'hc3': hc3(c, slots_per_round, rounds, cats, slots),
+    scores = {'hc3': hc3(c, slots_per_round, cats, slots),
               'hc4': hc4(c, cats, priority, slots),
               'hc5': hc5(c, rounds, slots_per_round, cats, slots),
               'sc1': sc1(c, slots, days),
               'sc2': sc2(c, slots, days)}
     # print(scores, c.size)
-    return (hardReward * (scores['hc3'] + scores['hc4'] + scores['hc5'])
+    total = (hardReward * (scores['hc3'] + scores['hc4'] + scores['hc5'])
             + softPenalty * (scores['sc1'] + scores['sc2']))
+    return (scores, total)
 
 
 def hc3(c, slots_per_round: Dict[str, int],
-        rounds_per_game: Dict[str, int],
         cats_per_game: Dict[str, int], slots):
     """ Events of games must have consecutive n timeslots,
     where n is given by the user for a particular game"""
@@ -38,7 +38,7 @@ def hc3(c, slots_per_round: Dict[str, int],
 
 
 def hc4(c, cats_per_game: Dict[str, int],
-        priority_per_game: Dict[str, int], slots):
+        priority_per_game: Dict[str, str], slots):
     """ Hard Constraint 4: Major games cannot have simultaneous games
     in the same category """
     major_games = filter(lambda g: priority_per_game[g] == 'Major',

@@ -4,7 +4,7 @@ from ga.data.reader import read_sf_data, read_game_data
 import ga.ga_methods.selection as sel
 
 def test_rank():
-    root = "~/GitHub/SF-Scheduler-algo/src/ga/data/test/"
+    root = "~/GitHub/SF-Scheduler-algo/ga/data/test/"
     game_data = \
         read_game_data(root + "test_game_data.csv")
     sf_data = \

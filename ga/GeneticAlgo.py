@@ -1,6 +1,7 @@
 import random as r
 import pandas as pd
 from functools import partial
+from collections import Counter
 from ga.data.reader import read_game_data, read_sf_data
 from ga.objective_function.fitness import fitness
 from ga.ga_methods.population_initialization import init_pop
@@ -35,6 +36,12 @@ def ch_crossover(crossover_method, crossover_params):
         'uniform': partial(cro.uniform, children=children)
     }[crossover_method]
 
+def write_fitness_data(avgs,path):
+    constraint_scores = [f[0] for f in avgs]
+    overall_scores = [f[1] for f in avgs]
+    c_df = pd.DataFrame(constraint_scores)
+    s_df = pd.Series(data=overall_scores, dtype=float, name="Average Fitness")
+    pd.concat((c_df,s_df), axis=1).to_csv(path,index=True)
 
 
 class GeneticAlgo:
@@ -84,8 +91,14 @@ class GeneticAlgo:
         self.population = list(map(self.mutation, children[0:m_size])) + children[m_size:]
 
     def avg_fitness(self):
-        return sum(map(lambda x: fitness(x, self.game_data, self.sf_data),
-                       self.population)) / len(self.population)
+        fitness_vals = [fitness(x, self.game_data, self.sf_data) for x in self.population]
+        avg_overall = sum([f[1] for f in fitness_vals])/len(self.population)
+        constraint_scores = [f[0] for f in fitness_vals]
+        c = Counter()
+        for d in constraint_scores:
+            c.update(d)
+        avg_constraints = {k: v/len(self.population) for k,v in dict(c).items()}
+        return (avg_constraints, avg_overall)
 
     def genetic_algo_threshold_prop(self):
         self.init_pop()
@@ -93,14 +106,12 @@ class GeneticAlgo:
         while True:
             self.genetic_algo_cycle()
             avg_fs.append(self.avg_fitness())
-            if abs(avg_fs[-1] - avg_fs[-2]) < self.threshold:
-                pd.Series(data=avg_fs, dtype=float,
-                          name="Average Fitness")\
-                        .to_csv(self.fitness_src, index=True)
+            if abs(avg_fs[-1][1] - avg_fs[-2][1]) < self.threshold:
+                write_fitness_data(avg_fs,self.fitness_src)
                 return max(self.population,
                            key=(lambda x: fitness(x,
                                                   self.game_data,
-                                                  self.sf_data)))
+                                                  self.sf_data)[1]))
 
     def genetic_algo_fixed_generation(self):
         self.init_pop()
@@ -108,16 +119,14 @@ class GeneticAlgo:
         for i in range(self.threshold):
             self.genetic_algo_cycle()
             avgf = self.avg_fitness()
-            print(f"Generation {i}/{self.threshold}, Avg Fitness: {avgf}")
+            print(f"Generation {i}/{self.threshold}, Avg Fitness: {avgf[1]}, Avg Per Constraint: {avgf[0]}")
             avg_fs.append(avgf)
-            pd.Series(data=avg_fs, dtype=float,
-                      name="Average Fitness")\
-                .to_csv(self.fitness_src, index=True)
+            write_fitness_data(avg_fs,self.fitness_src)
 
         return max(self.population,
                    key=(lambda x: fitness(x,
                                           self.game_data,
-                                          self.sf_data)))
+                                          self.sf_data)[1]))
 
     def ga(self):
         if 0 <= self.threshold <= 1:

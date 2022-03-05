@@ -9,8 +9,8 @@ def test_hc3():
     slots = 4
     min_slots_per_game = {'A': 3, 'B': 3, 'C': 3}
     min_slots_true = {'A': 1, 'B': 1, 'C': 1}
-    assert not fit.hc3(c, min_slots_per_game, cats_per_game, slots) > 0 \
-        and fit.hc3(c, min_slots_true, cats_per_game, slots) > 0
+    assert not fit.hc3(c, min_slots_true, cats_per_game, slots) > 0 \
+        and fit.hc3(c, min_slots_per_game, cats_per_game, slots) > 0
 
 
 def test_hc4():
@@ -22,13 +22,14 @@ def test_hc4():
 
 
 def test_hc5():
-    c = np.array([1,1,1,0,1,0,0,0,1,0,0,1,0,0,1,1,1,0,0,0,1,0,1,0])
+    c = np.array([1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1])
     cats_per_game = {'A': 3, 'B': 2, 'C': 3}
     slots = 3
     rounds_per_game = {g: 1 for g in ['A', 'B', 'C']}
     rounds_invalid = {g: 3 for g in ['A', 'B', 'C']}
-    assert fit.hc5(c, cats_per_game, rounds_per_game, slots) == 1
-    assert fit.hc5(c, cats_per_game, rounds_invalid, slots) == 0
+    min_slots_per_game = {'A': 2, 'B': 3, 'C': 3}
+    assert fit.hc5(c, rounds_per_game, min_slots_per_game, cats_per_game, slots) == 0
+    assert fit.hc5(c, rounds_invalid, min_slots_per_game, cats_per_game, slots) > 0
 
 
 def test_sc1():
@@ -55,10 +56,10 @@ def test_sc2():
     assert fit.sc2(c_skewed, slots, days) > 0
 
 
-def test_fitness():
-    c = np.array([1,0,1,1,1,1,1,1,0,1,1,0,1,0,0])
-    c2 = np.array([0,1,0,0,1,0,0,1,0,0,1,0,0,1,0])
-    root = '~/GitHub/SF-Scheduler-algo/src/ga/data/test/'
-    game_data = rea.read_game_data(root+"test_game_data.csv")
-    sf_data = rea.read_sf_data(root+"test_sf_data.csv")
-    assert fit.fitness(c2, game_data, sf_data) == fit.fitness(c, game_data, sf_data)
+# def test_fitness():
+    # c = np.array([1,0,1,1,1,1,1,1,0,1,1,0,1,0,0])
+    # c2 = np.array([0,1,0,0,1,0,0,1,0,0,1,0,0,1,0])
+    # root = '~/GitHub/SF-Scheduler-algo/ga/data/test/'
+    # game_data = rea.read_game_data(root+"test_game_data.csv")
+    # sf_data = rea.read_sf_data(root+"test_sf_data.csv")
+    # assert fit.fitness(c2, game_data, sf_data) == fit.fitness(c, game_data, sf_data)

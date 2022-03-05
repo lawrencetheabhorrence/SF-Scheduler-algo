@@ -1,9 +1,7 @@
+""" this is mostly for testing timing and fitness """
 import time
 import os
-import sys
 from ga.GeneticAlgo import GeneticAlgo
-from ga.data.reader import read_game_data, read_sf_data
-from ga.data.output import bits_to_sched
 import datetime
 
 root = os.path.dirname(os.path.abspath(__file__))
@@ -15,12 +13,12 @@ ga_params = {
     'selection_method': 'rank',
     'crossover_method': 'uniform',
     'mutation_method': 'bit_flip',
-    'threshold': 650,
+    'threshold': 10,
     'pop_size': 50,
     'mutation_rate': 0.1,
     'game_src': root + big_folder + '/big_game_data_og.csv',
     'sf_src': root + big_folder + '/big_sf_data_og.csv',
-    'fitness_src': root + big_folder + '/big_fitness.csv',
+    'fitness_src': root + big_folder + f"{datetime.datetime.today().strftime('%Y-%m-%d-%H:%M:%S')}_fitness.csv",
     'crossover_params': {'children': 2, 'n_breaks': 5}
 }
 
@@ -44,16 +42,5 @@ def __main__():
     print(f"Time in seconds: {t_end-t_start:0.4f}")
     with open(f"{datetime.datetime.today().strftime('%Y-%m-%d-%H:%M:%S')}.txt", "w") as f:
         f.write(f"Time in seconds: {t_end-t_start:0.4f}")
-    sf_data = read_sf_data(ga_params['sf_src'])
-    # sf_data = read_sf_data(ga_params['sf_src'])
-    # game_data = read_game_data(ga_params['game_src'])
-    # df = bits_to_sched(best, sf_data, game_data)
-    # for i, day in enumerate(df):
-    #     day.to_html(root + big_folder + 'result' + str(i) + '.html', escape=False)
-    #     day.to_csv(root + big_folder + 'result' + str(i) + '.csv')
-    #     global days
-    #     days = i + 1
-    # print(df)
-    # print(days)
 
 __main__()

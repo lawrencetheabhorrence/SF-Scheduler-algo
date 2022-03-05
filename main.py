@@ -1,6 +1,7 @@
 import time
 import os
 import sys
+import datetime.datetime as dt
 from ga.GeneticAlgo import GeneticAlgo
 from ga.data.reader import read_game_data, read_sf_data
 from ga.data.output import bits_to_sched
@@ -21,6 +22,7 @@ global receiver
 receiver, sf_path, game_path = sys.argv[1], sys.argv[2], sys.argv[3]
 sf_email = os.getenv('SF_EMAIL')
 sf_pass = os.getenv('SF_PASS')
+date = dt.today().strftime("%Y-%m-%d-%H:%M:%S")
 
 # send email
 def send_email():
@@ -72,7 +74,7 @@ ga_params = {
     'mutation_rate': 0.1,
     'game_src': game_path,
     'sf_src': sf_path,
-    'fitness_src': root + big_folder + '/big_fitness.csv',
+    'fitness_src': root + big_folder + f"/{date}_fitness.csv",
     'crossover_params': {'children': 2, 'n_breaks': 5}
 }
 
@@ -95,10 +97,11 @@ def __main__():
     t_end = time.perf_counter()
     print(f"Time in seconds: {t_end-t_start:0.4f}")
     game_data = read_game_data(ga_params['game_src'])
+    sf_data = read_sf_data(ga_params['sf_src'])
     df = bits_to_sched(best, sf_data, game_data)
     for i, day in enumerate(df):
-        day.to_html(root + big_folder + 'result' + str(i) + '.html', escape=False)
-        day.to_csv(root + big_folder + 'result' + str(i) + '.csv')
+        day.to_html(root + big_folder + date + '_result' + str(i) + '.html', escape=False)
+        day.to_csv(root + big_folder + date + '_result' + str(i) + '.csv')
         global days
         days = i + 1
     print(df)

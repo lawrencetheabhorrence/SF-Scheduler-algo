@@ -28,10 +28,10 @@ def test_split_chromosome_per_game():
 
 def test_enough_consec_slots():
     c = np.array([1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1])
-    assert fh.enough_consec_slots(c,  3) and not \
-        fh.enough_consec_slots(c,  2)
+    assert fh.enough_consec_slots(c,  3) == 0 and not \
+        fh.enough_consec_slots(c,  2) == 0
 
 
 def test_enough_rounds():
-    c = np.array([1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1])
-    assert fh.enough_rounds(c,  3) and not fh.enough_rounds(c,  5)
+    c = np.array([1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1])
+    assert fh.enough_rounds(c,  5, 2) == 0 and not fh.enough_rounds(c,  3, 2) == 0
