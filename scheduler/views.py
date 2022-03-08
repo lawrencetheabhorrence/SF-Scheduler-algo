@@ -13,8 +13,8 @@ model = "model/"
 # Create your views here.
 def sf_csv(js):
     parsed = json.loads(js)
-    sf_header = "slots,days,minutes_per_slot,start_time,start_date"
-    sf_data = f"{parsed['n_timeslots_day']},{parsed['days']},{parsed['timeslot_length']},8:00,{parsed['start_date']}"
+    sf_header = "slots,days,minutes_per_slot,start_time,start_date,teams"
+    sf_data = f"{parsed['n_timeslots_day']},{parsed['days']},{parsed['timeslot_length']},8:00,{parsed['start_date']},{parsed['teams']}"
     return sf_header + "\n" + sf_data
 
 def game_csv(js):
