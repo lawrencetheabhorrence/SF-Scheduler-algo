@@ -14,22 +14,23 @@ import email.mime.application
 import email.mime.text
 import email.mime.multipart
 
-root = os.path.dirname(os.path.abspath(__file__))
-big_folder = '/data/model'
-tiny_folder = '/ga/data/test'
 
 global days
 global receiver
 receiver, sf_path, game_path = sys.argv[1], sys.argv[2], sys.argv[3]
+client_info = receiver.split('@')  # 0 = identifier, 1 = domain
 sf_email = os.getenv('SF_EMAIL')
 sf_pass = os.getenv('SF_PASS')
 date = dt.today().strftime("%Y-%m-%d-%H:%M:%S")
 
+root = os.path.dirname(os.path.abspath(__file__))
+big_folder = '/data/client_data/' + client_info[0] + "/model"
+tiny_folder = '/ga/data/test'
 # send email
 def send_email():
     """Shoot client with mailgun!"""
     global days
-    attachmentpath = root + '/data/'
+    attachmentpath = root + '/data/client_data/' + client_info[0]
 
     # MIME format message
     msg = email.mime.multipart.MIMEMultipart()
@@ -70,8 +71,8 @@ ga_params = {
     'selection_method': 'rank',
     'crossover_method': 'uniform',
     'mutation_method': 'bit_flip',
-    'threshold': 650,
-    'pop_size': 50,
+    'threshold': 10,
+    'pop_size': 10,
     'mutation_rate': 0.1,
     'game_src': game_path,
     'sf_src': sf_path,
@@ -101,13 +102,13 @@ def __main__():
     game_data = read_game_data(ga_params['game_src'], sf_data['teams'])
     df = bits_to_sched(best, sf_data, game_data)
     for i, day in enumerate(df):
-        day.to_html(root + big_folder + date + '_result' + str(i) + '.html', escape=False)
-        day.to_csv(root + big_folder + date + '_result' + str(i) + '.csv')
+        day.to_html(root + big_folder + date + client_info[0] + '_result' + str(i) + '.html', escape=False)
+        day.to_csv(root + big_folder + date + client_info[0] + '_result' + str(i) + '.csv')
         global days
         days = i + 1
     print(df)
     print(days)
 
 __main__()
-send_email()
+# send_email() disabled email functionality while testing
 
