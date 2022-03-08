@@ -1,7 +1,7 @@
 import time
 import os
 import sys
-import datetime.datetime as dt
+from datetime import datetime as dt
 from ga.GeneticAlgo import GeneticAlgo
 from ga.data.reader import read_game_data, read_sf_data
 from ga.data.output import bits_to_sched
@@ -75,7 +75,7 @@ ga_params = {
     'mutation_rate': 0.1,
     'game_src': game_path,
     'sf_src': sf_path,
-    'fitness_src': root + big_folder + f"/{date}_fitness.csv",
+    'fitness_src': root + big_folder + f"/" + client_info[0] + "_{date}_fitness.csv",
     'crossover_params': {'children': 2, 'n_breaks': 5}
 }
 
