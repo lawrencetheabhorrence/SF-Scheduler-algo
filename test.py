@@ -6,7 +6,7 @@ import ga.objective_function.fitness_helper as fh
 root = '~/GitHub/SF-Scheduler-algo/src/data/model/'
 
 sf_data = rea.read_sf_data(root + 'big_sf_data.csv')
-game_data = rea.read_game_data(root + 'big_game_data.csv')
+game_data = rea.read_game_data(root + 'big_game_data.csv', sf_data['teams'])
 
 c = pop.generate_chromosome(15 * 2 * 45)
 

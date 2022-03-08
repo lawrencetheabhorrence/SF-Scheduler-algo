@@ -43,7 +43,6 @@ def write_fitness_data(avgs,path):
     s_df = pd.Series(data=overall_scores, dtype=float, name="Average Fitness")
     pd.concat((c_df,s_df), axis=1).to_csv(path,index=True)
 
-
 class GeneticAlgo:
 
     def __init__(self, selection_method,
@@ -52,12 +51,12 @@ class GeneticAlgo:
                  fitness_src, crossover_params,
                  **kwargs):
         self.threshold = threshold
-        self.game_data = (read_game_data(kwargs['game_src'])
-                          if 'game_data' not in kwargs
-                          else kwargs['game_data'])
         self.sf_data = (read_sf_data(kwargs['sf_src'])
                         if 'sf_data' not in kwargs
                         else kwargs['sf_data'])
+        self.game_data = (read_game_data(kwargs['game_src'], self.sf_data['teams'])
+                          if 'game_data' not in kwargs
+                          else kwargs['game_data'])
         self.pop_size = pop_size
         self.mutation_rate = mutation_rate
         self.fitness_src = fitness_src

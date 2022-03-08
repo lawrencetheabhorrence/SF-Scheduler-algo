@@ -96,8 +96,8 @@ def __main__():
     print(best)
     t_end = time.perf_counter()
     print(f"Time in seconds: {t_end-t_start:0.4f}")
-    game_data = read_game_data(ga_params['game_src'])
     sf_data = read_sf_data(ga_params['sf_src'])
+    game_data = read_game_data(ga_params['game_src'], sf_data['teams'])
     df = bits_to_sched(best, sf_data, game_data)
     for i, day in enumerate(df):
         day.to_html(root + big_folder + date + '_result' + str(i) + '.html', escape=False)
@@ -106,7 +106,6 @@ def __main__():
         days = i + 1
     print(df)
     print(days)
-
 
 __main__()
 send_email()

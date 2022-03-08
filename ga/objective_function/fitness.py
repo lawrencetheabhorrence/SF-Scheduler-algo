@@ -1,7 +1,5 @@
 import numpy as np
 from typing import Dict
-from ga.data.reader import read_sf_data, read_game_data
-from ga.helper.bit_helper import locate_bit
 from itertools import chain
 import ga.objective_function.fitness_helper as fh
 

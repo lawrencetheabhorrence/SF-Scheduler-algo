@@ -18,9 +18,9 @@ def test_random_chromosome_lengths():
 
 def test_init_pop():
     root = "~/GitHub/SF-Scheduler-algo/ga/data/test/"
-    game_data = \
-        read_game_data(root + "test_game_data.csv")
     sf_data = \
         read_sf_data(root + "test_sf_data.csv")
+    game_data = \
+        read_game_data(root + "test_game_data.csv", sf_data['teams'])
     p = init_pop(50, game_data, sf_data)
     assert len(p) == 50 and p[0].size == (5 * 1 * 5)
