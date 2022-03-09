@@ -75,7 +75,7 @@ ga_params = {
     'mutation_rate': 0.1,
     'game_src': game_path,
     'sf_src': sf_path,
-    'fitness_src': root + big_folder + f"/" + client_info[0] + "_{date}_fitness.csv",
+    'fitness_src': root + big_folder + f"/" + client_info[0] + "_" + date + "_fitness.csv",
     'crossover_params': {'children': 2, 'n_breaks': 5}
 }
 
