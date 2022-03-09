@@ -6,7 +6,7 @@ def calc_rounds_from_teams(n_teams, priority):
 
 
 def read_game_data(src="data/game_data.csv", teams=3):
-    df = pd.read_csv(src, sep=',',
+    df = pd.read_csv(src, sep=', ',
                      dtype={
                          'cats': int,
                          'priority': 'string',
